@@ -11,6 +11,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Recipes.Service.Services;
 using DotNetEnv;
+using dotenv.net;
+using dotenv.net;
 
 internal class Program
 {
@@ -18,7 +20,8 @@ internal class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        Env.Load(); 
+        DotEnv.Load();
+        //Env.Load(); 
         //string jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET");
         string jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET") ?? throw new Exception("JWT_SECRET is not set");
 
@@ -49,7 +52,7 @@ internal class Program
 
         builder.Services.AddSingleton<IS3Service, S3Service>(); // רישום ה-S3Service
         builder.Services.AddScoped<JwtService>();
-        var connectionString = "Server=bhlraqx5nvyxmpm5cicv-mysql.services.clever-cloud.com;Database=bhlraqx5nvyxmpm5cicv;User=ua67fticoup8ufvo;Password=eB0GEfKtrMmgTdEjQExt; ";
+        var connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION_STRING");
         builder.Services.AddDbContext<DataContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
     mysqlOptions => mysqlOptions.CommandTimeout(60)));
