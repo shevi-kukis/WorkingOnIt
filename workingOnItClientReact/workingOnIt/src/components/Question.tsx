@@ -1,18 +1,21 @@
+
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { checkAnswer } from '../store/interviewSlice';
 
 
-const QuestionComponent = ({ question, onFeedbackReceived }) => {
+const Question = ({ question, onFeedbackReceived }) => {
     const [answer, setAnswer] = useState('');
     const [loading, setLoading] = useState(false);
     const dispatch = useDispatch();
 
-    const handleAnswerChange = (e:any) => {
+    const handleAnswerChange = (e) => {
         setAnswer(e.target.value);
     };
 
-    const handleSubmit = async (e:any) => {
+
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         try {
@@ -43,4 +46,4 @@ const QuestionComponent = ({ question, onFeedbackReceived }) => {
     );
 };
 
-export default QuestionComponent;
+export default Question;

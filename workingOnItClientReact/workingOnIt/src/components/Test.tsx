@@ -1,31 +1,38 @@
+
+
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { uploadResume } from '../store/interviewSlice';
-import type RootState from '../store/store'; // Import the RootState type
-import QuestionComponent from './Question';
+import Question from './Question';
+import { checkAnswer, uploadResume } from '../store/interviewSlice';
+import RootState from '../store/store'; // Adjust the path to your store file
 
 
-const MainComponent = () => {
-    const questions = useSelector((state: RootState) => state.interview.questions);
-    const currentQuestionIndex = useSelector((state: RootState) => state.interview.currentQuestionIndex);
-    const feedbacks = useSelector((state: RootState) => state.interview.feedbacks as string[]);
-    const [inputValue, setInputValue] = React.useState<File | null>(null);
+
+const Interview = () => {
     const dispatch = useDispatch();
-    const handleSubmit = (e:any) => {
-        e.preventDefault();
-        const formData = new FormData();
-        if (inputValue) {
-            formData.append('resume', inputValue);
-        } else {
-            console.error('No file selected');
+    const questions = useSelector((state) => state.interview.questions);
+    const currentQuestionIndex = useSelector((state) => state.interview.currentQuestionIndex);
+    const feedbacks = useSelector((state) => state.interview.feedbacks);
+    const [file, setFile] = React.useState('');
+
+    const handleChange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+            setFile(e.target.files[0]);
         }
 
-        dispatch(uploadResume(formData)); // שולחים את הפעולה ל-Redux
+    };
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        dispatch(uploadResume(file));
+         // שולחים את הפעולה ל-Redux
     };
 
+
     const handleFeedbackReceived = (feedback) => {
-        // יש להוסיף את הפידבק ל-Redux (יש להוסיף reducer עבור פידבק)
+        dispatch(checkAnswer({ question: questions[currentQuestionIndex], answer: feedback }));
+        dispatch(nextQuestion()); // מעדכן את currentQuestionIndex
     };
+
 
     return (
         <div>
@@ -33,18 +40,14 @@ const MainComponent = () => {
             <form onSubmit={handleSubmit}>
                 <input
                     type="file"
-                    accept="application/pdf"
-                    onChange={(e) => {
-                        if (e.target.files && e.target.files[0]) {
-                            setInputValue(e.target.files[0]);
-                        }
-                    }}
+                    accept=".pdf"
+                    onChange={handleChange}
                 />
                 <button type="submit">שלח קורות חיים</button>
             </form>
 
             {currentQuestionIndex < questions.length && (
-                <QuestionComponent
+                <Question
                     question={questions[currentQuestionIndex]}
                     onFeedbackReceived={handleFeedbackReceived}
                 />
@@ -54,7 +57,7 @@ const MainComponent = () => {
                 <div>
                     <h3>משובים:</h3>
                     <ul>
-                        {feedbacks.map((feedback: string, index: number) => (
+                        {feedbacks.map((feedback, index) => (
                             <li key={index}>{feedback}</li>
                         ))}
                     </ul>
@@ -64,5 +67,5 @@ const MainComponent = () => {
     );
 };
 
-export default MainComponent;
+export default Interview;
 

@@ -6,11 +6,20 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Recipes.Service.Services;
+using Amazon.Runtime;
+using Amazon.S3.Transfer;
+using AutoMapper;
+using WorkingOnIt.Core.Dtos;
+using WorkingOnIt.Core.Entities;
+using WorkingOnIt.Core.InterfaceRepository;
+using WorkingOnIt.Core.InterfaceService;
 
 public class S3Service:IS3Service
 {
     private readonly IAmazonS3 _s3Client;
     private readonly string _bucketName;
+    private readonly string _bucketUrl;
+
 
     public S3Service()
     {
@@ -22,6 +31,7 @@ public class S3Service:IS3Service
 
         // יצירת האובייקט AmazonS3Client עם המידע שהתקבל מ-ENV
         _s3Client = new AmazonS3Client(accessKey, secretKey, Amazon.RegionEndpoint.GetBySystemName(region));
+        _bucketUrl = $"https://{_bucketName}.s3.amazonaws.com/";
     }
 
     // פונקציה ליצירת URL חתום להעלאת קובץ
@@ -43,14 +53,14 @@ public class S3Service:IS3Service
     public async Task<string> UploadFileAsync(IFormFile file)
     {
         var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-        var filePath = "resumes/" + fileName; // תיקיית קורות חיים ב-S3
+        //var filePath = "resumes/" + fileName; // תיקיית קורות חיים ב-S3
 
         using (var stream = file.OpenReadStream())
         {
             var putRequest = new PutObjectRequest
             {
                 BucketName = _bucketName,
-                Key = filePath,
+                Key = fileName,
                 InputStream = stream,
                 ContentType = file.ContentType
             };
@@ -58,7 +68,8 @@ public class S3Service:IS3Service
             await _s3Client.PutObjectAsync(putRequest);
         }
 
-        return filePath;
+     
+        return $"{_bucketUrl}{fileName}"; // החזרת ה-URL של הקובץ
     }
 
     // פונקציה לעדכון קובץ (מחיקת קובץ קודם והעלאת חדש)
