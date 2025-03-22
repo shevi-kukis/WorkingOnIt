@@ -7,4 +7,8 @@ const store = configureStore({
     },
 });
 
+// Define the type for the Redux store's state
+export type StoreType = ReturnType<typeof store.getState>;
+
+// Export the store
 export default store;

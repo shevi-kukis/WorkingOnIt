@@ -32,6 +32,7 @@ const LoginModal: React.FC = () => {
       });
       localStorage.setItem("token", response.data.token);
       setOpen(false); // סגירת המודל לאחר התחברות
+     
       navigate("/homeLogin");
     } catch (error) {
       console.error("Login failed", error);

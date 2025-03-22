@@ -8,8 +8,9 @@ import { Provider } from 'react-redux'
 import { router } from './Router'
 
 
-import Test from './components/Test'
+
 import store from './store/store'
+import Interview from './components/Interview'
 
 
 function App() {
@@ -22,7 +23,7 @@ function App() {
            <Provider store={store}>
            <AuthProvider>
            <RouterProvider router={router} />
-           <Test/>
+           <Interview/>
        
            </AuthProvider>
          </Provider>

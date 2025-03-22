@@ -25,6 +25,9 @@ const HomeLogin = () => {
     
       {state.user ? (
         <>
+        <div>aaaa</div>
+        <div>{state.resume?.filePath}</div>
+    
           <span>Welcome, {state.user.fullName}!</span>
           <Avatar sx={{ bgcolor: "blue", color: "white" }}>
             {state.user.fullName[0]}
