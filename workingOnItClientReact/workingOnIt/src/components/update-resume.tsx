@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axiosInstance from '../utils/axiosInstance';
+import { useAuth } from './AuthContext';
 
 
 const UpdateResume = () => {
@@ -21,7 +22,8 @@ const UpdateResume = () => {
     }
 
     try {
-      const response = await axiosInstance.post('/User/update-resume', formData, {
+      const userId = useAuth().state.user?.id // Replace with the actual user ID
+      const response = await axiosInstance.post(`/Resume/update-resume/${userId}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       console.log(response.data.message); // אם יש הצלחה

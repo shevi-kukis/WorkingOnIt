@@ -38,7 +38,7 @@ const HomeLogin = () => {
 
           {state.resume ? (
         
-          <FileUploader fileName={state.resume.fileName} contentType={state.resume.filePath} />
+          <FileUploader resumeUrl={state.resume.filePath} />
         //   <a href={state.resume.filePath} target="_blank" rel="noopener noreferrer">
         //   Download Resume
         // </a>

@@ -1,44 +1,10 @@
+
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { interviewState } from '../models/interview';
 import { StoreType } from './store';
-import { useAuth } from '../components/AuthContext';
-
-
 
 const API_PYTHON_BASE_URL = 'http://localhost:5000';
-
-// export const uploadResume: any = createAsyncThunk(
-//     'interview/uploadResume',
-//     async (resumeFile: File) => {
-//         const formData = new FormData();
-//         formData.append('resume', resumeFile);
-//         const response = await axios.post(`${API_PYTHON_BASE_URL}/upload_resume`, formData, {
-//             headers: {
-//                 'Content-Type': 'multipart/form-data',
-//             },
-//         });
-
-//         // טיפול נכון בנתונים מהשרת
-//         let arrayQuestions = [];
-//         if (typeof response.data.questions === "string") {
-//             try {
-//                 arrayQuestions = JSON.parse(response.data.questions); 
-//                 if (!Array.isArray(arrayQuestions)) {
-//                     throw new Error("Response is not an array");
-//                 }
-//             } catch (error) {
-//                 console.error("Error parsing JSON questions:", error);
-//                 arrayQuestions = [];
-//             }
-//         } else if (Array.isArray(response.data.questions)) {
-//             arrayQuestions = response.data.questions;
-//         }
-
-//         console.log("Parsed Questions:", arrayQuestions);
-//         return arrayQuestions;
-//     }
-// );
 
 export const uploadResume: any = createAsyncThunk(
     'interview/uploadResume',
@@ -46,12 +12,12 @@ export const uploadResume: any = createAsyncThunk(
         try {
             const response = await axios.post(`${API_PYTHON_BASE_URL}/upload_resume`, { filePath });
             return response.data.questions;
-        } catch (error) {
+        } catch (error: any) {
             return rejectWithValue(error.response?.data || 'Error uploading resume');
         }
     }
 );
-// Async thunk to check answer
+
 export const checkAnswer: any = createAsyncThunk(
     'interview/checkAnswer',
     async ({ question, answer }: { question: string; answer: string }) => {
@@ -59,19 +25,10 @@ export const checkAnswer: any = createAsyncThunk(
             question,
             answer,
         });
-        return response.data.feedback; // מחזירים את הפידבק
+        return response.data.feedback;
     }
 );
 
-// export const evaluateResponses: any = createAsyncThunk(
-//     'interview/evaluateResponses',
-//     async (feedbackList) => {
-//         const response = await axios.post(`${API_PYTHON_BASE_URL}/evaluate_responses`, {
-//             feedback_list: feedbackList,
-//         });
-//         return response.data; // מחזירים את הציון הממוצע ואת הסיכום
-//     }
-// );
 export const evaluateResponses: any = createAsyncThunk(
     'interview/evaluateResponses',
     async (_, { getState }) => {
@@ -79,12 +36,9 @@ export const evaluateResponses: any = createAsyncThunk(
         const response = await axios.post(`${API_PYTHON_BASE_URL}/evaluate_responses`, {
             feedback_list: state.feedbacks,
         });
-        return response.data; // מחזירים את הציון הממוצע ואת הסיכום
+        return response.data;
     }
 );
-
-// Define the interviewState interface
-
 
 export const initialState: interviewState = {
     questions: [],
@@ -92,9 +46,10 @@ export const initialState: interviewState = {
     feedbacks: [],
     averageScore: null,
     summary: '',
-    status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+    status: 'idle',
     error: null,
-}
+    isInterviewFinished: false, // ✅ משתנה חדש לזיהוי סוף הראיון
+};
 
 const interviewSlice = createSlice({
     name: 'interview',
@@ -104,42 +59,30 @@ const interviewSlice = createSlice({
             state.questions = [];
             state.currentQuestionIndex = 0;
             state.feedbacks = [];
+            state.isInterviewFinished = false;
         },
         nextQuestion: (state) => {
             if (state.currentQuestionIndex < state.questions.length - 1) {
-                state.currentQuestionIndex += 1; // עובר לשאלה הבאה רק אם לא הגענו לאחרונה
+                state.currentQuestionIndex += 1;
             } else {
-                console.log("No more questions left.");
+                state.isInterviewFinished = true; // ✅ מסמן שהראיון הסתיים
             }
         },
-        
     },
     extraReducers: (builder) => {
         builder
             .addCase(uploadResume.pending, (state) => {
                 state.status = 'loading';
             })
-            // .addCase(uploadResume.fulfilled, (state, action) => {
-            //     state.status = 'succeeded';
-            //     state.questions = action.payload;
-            //     console.log( state.questions);
-            //     // state.questions = action.payload.map((question: string) => question.replace(/["']/g, '').trim());
-            //     // console.log(action.payload);
-
-            // })
             .addCase(uploadResume.fulfilled, (state, action) => {
                 state.status = 'succeeded';
-            
-                // חיתוך הרשימה כדי להסיר את האיבר הראשון והאחרון
                 if (Array.isArray(action.payload) && action.payload.length > 1) {
                     state.questions = action.payload.slice(1, -1);
                 } else {
-                    state.questions = action.payload; // אם הרשימה ריקה או עם איבר אחד, נשמור אותה כמו שהיא
+                    state.questions = action.payload;
                 }
-            
-                console.log(state.questions);
+                state.isInterviewFinished = false; // ✅ מאפס את הסטטוס כשמתחיל ראיון חדש
             })
-            
             .addCase(uploadResume.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.error.message;
@@ -150,10 +93,10 @@ const interviewSlice = createSlice({
             .addCase(evaluateResponses.fulfilled, (state, action) => {
                 state.averageScore = action.payload.average_score;
                 state.summary = action.payload.summary;
+                state.isInterviewFinished = true; // ✅ מסמן שהראיון הסתיים
             });
     },
 });
 
 export const { resetInterview, nextQuestion } = interviewSlice.actions;
-
 export default interviewSlice.reducer;

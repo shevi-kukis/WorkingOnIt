@@ -15,18 +15,35 @@ using System.Threading.Tasks;
     {
         public interface IS3Service
         {
-         public   Task<string> GeneratePresignedUrlAsync(string fileName, string contentType);
-          public  Task<string> GetDownloadUrlAsync(string fileName);
+
+
+
+
+
+        // 🟢 יצירת URL חתום להעלאת קובץ
+        public Task<string> GeneratePresignedUploadUrlAsync(string fileName, string contentType);
+
+
+        // 🟢 העלאת קובץ ל-S3 ומחזיר URL חתום להורדה
         public Task<string> UploadFileAsync(IFormFile file);
-    
-
-        public  Task<string> UpdateFileAsync(IFormFile file, string currentFilePath);
 
 
-        public  Task DeleteFileAsync(string filePath);
+        // 🟢 מחיקת קובץ מ-S3
+        public Task DeleteFileAsync(string fileName);
+
+
+        // 🟢 יצירת URL חתום להורדת קובץ
+        public  Task<string> GeneratePresignedDownloadUrlAsync(string fileName);
+
+
+        // 🟢 עדכון קובץ (מחיקת הישן והעלאת חדש)
+        public  Task<string> UpdateFileAsync(IFormFile file, string oldFileName);
    
     }
+
+
 }
+
 
 
 

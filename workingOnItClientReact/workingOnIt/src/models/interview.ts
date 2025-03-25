@@ -6,4 +6,5 @@ export interface interviewState {
     summary: string;
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     error: string | null;
+    isInterviewFinished: boolean;
 }

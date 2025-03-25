@@ -36,12 +36,19 @@ namespace WorkingOnIt.Service.Services
 
         public async Task<ResumeDto> UpdateAsync(int id, ResumeDto resumeDto)
         {
-            Resume resume = _mapper.Map<Resume>(resumeDto);
-            resume = await _iManager.resumeRepository.UpdateAsync(id, resume);
-            if (resume != null)
-                await _iManager.SaveAsync();
-            return _mapper.Map<ResumeDto>(resume);
+            var existingResume = await _iManager.resumeRepository.GetByIdAsync(id);
+            if (existingResume == null)
+                return null;
+
+            // עדכון רק הנתיב של הקובץ כדי לא לדרוס שדות אחרים
+            existingResume.FilePath = resumeDto.FilePath;
+
+            await _iManager.resumeRepository.UpdateAsync(id, existingResume);
+            await _iManager.SaveAsync();
+
+            return _mapper.Map<ResumeDto>(existingResume);
         }
+
 
         public async Task<bool> DeleteAsync(int id)
         {

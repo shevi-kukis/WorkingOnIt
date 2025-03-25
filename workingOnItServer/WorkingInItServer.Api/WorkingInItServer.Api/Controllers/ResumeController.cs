@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Recipes.Service.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using WorkingOnIt.Core.Dtos;
@@ -72,5 +73,29 @@ namespace WorkingInIt.Api.Controllers
 
             return Ok(resume);
         }
+        [HttpPost("update-resume/{userId}")]
+        public async Task<IActionResult> UpdateResume(int userId, [FromForm] IFormFile file, [FromServices] IS3Service s3Service)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest(new { message = "No file uploaded" });
+            }
+
+            var resume = await _service.GetResumeByUserId(userId);
+            if (resume == null)
+            {
+                return NotFound(new { message = "Resume not found for this user" });
+            }
+
+            // העלאת קובץ חדש ל-S3
+            string filePath = await s3Service.UploadFileAsync(file);
+
+            // עדכון הנתיב במסד הנתונים
+            resume.FilePath = filePath;
+            await _service.UpdateAsync(resume.Id, resume);
+
+            return Ok(new { message = "Resume updated successfully", filePath });
+        }
+
     }
 }
