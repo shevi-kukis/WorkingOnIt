@@ -20,45 +20,37 @@ const RegisterModal: React.FC = () => {
   const { dispatch } = useAuth();
   const navigate = useNavigate();
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files ? e.target.files[0] : null;
-    setResume(file);
-  };
 const handleClose=()=>
 {
   setOpen(false)
   navigate("/home");
 }
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append("fullName", username);
-    formData.append("email", email);
-    formData.append("passwordHash", password);
-    if (resume) {
-      formData.append("resume", resume);
-    }
+const handleRegister = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    try {
-      const response = await axiosInstance.post("/Auth/register", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+  try {
+    const response = await axiosInstance.post("/Auth/register", {
+      fullName: username,
+      email,
+      password,
+    });
 
-      dispatch({
-        type: "REGISTER",
-        payload: {
-          user: response.data.user,
-          token: response.data.token,
-          resume: response.data.resume || null,
-        },
-      });
+    dispatch({
+      type: "REGISTER",
+      payload: {
+        user: response.data.user,
+        token: response.data.token, // הטוקן יתקבל בהתחברות
+        resume: null,
+      },
+    });
 
-      setOpen(false); // סגירת המודל לאחר רישום
-      navigate("/homeLogin");
-    } catch (error: any) {
-      console.error("Registration failed", error);
-    }
-  };
+    setOpen(false);
+    navigate("/homeLogin");
+  } catch (error) {
+    console.error("Registration failed", error);
+  }
+};
+
 
   return (
     <Dialog open={open} onClose={ handleClose}>
@@ -87,7 +79,7 @@ const handleClose=()=>
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <input type="file" onChange={handleFileChange} />
+      
 
           <DialogActions>
             <Button onClick={handleClose}>ביטול</Button>

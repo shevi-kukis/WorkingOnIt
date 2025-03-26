@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Recipes.Service.Services;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using WorkingOnIt.Core.Dtos;
 using WorkingOnIt.Core.InterfaceService;
@@ -42,60 +43,78 @@ namespace WorkingInIt.Api.Controllers
             return BadRequest(value);
         }
 
-        // PUT api/Resume/5
-        [HttpPut("{id}")]
-        public async Task<ActionResult<ResumeDto>> Put(int id, [FromBody] ResumeDto value)
-        {
-            var result = await _service.UpdateAsync(id, value);
-            if (result == null)
-                return NotFound();
-            return Ok(result);
-        }
+        //// PUT api/Resume/5
+        //[HttpPut("{id}")]
+        //public async Task<ActionResult<ResumeDto>> Put(int id, [FromBody] ResumeDto value)
+        //{
+        //    var result = await _service.UpdateResumeAsync(id, value);
+        //    if (result == null)
+        //        return NotFound();
+        //    return Ok(result);
+        //}
 
-        // DELETE api/Resume/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<bool>> Delete(int id)
+        [HttpPost("upload")]
+        public async Task<IActionResult> UploadResume([FromForm] IFormFile file)
         {
-            var result = await _service.DeleteAsync(id);
-            if (!result)
-                return NotFound();
-            return Ok(result);
-        }
-        [HttpGet("{userId}")]
-        public async Task<IActionResult> GetResume(int userId)
-        {
-            var resume = await _service.GetResumeByUserId(userId);
-
-            if (resume == null)
+            try
             {
-                return NotFound(new { message = "Resume not found" });
-            }
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null)
+                    return Unauthorized("User not found");
 
-            return Ok(resume);
+                if (!int.TryParse(userIdClaim.Value, out int userId))
+                    return BadRequest("Invalid user ID");
+
+                Console.WriteLine($"User ID: {userId}, File Name: {file.FileName}");
+
+                var fileUrl = await _service.UploadResumeAsync(userId, file);
+                return Ok(new { fileUrl });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Upload error: {ex}");
+                return StatusCode(500, ex.Message);
+            }
         }
-        [HttpPost("update-resume/{userId}")]
-        public async Task<IActionResult> UpdateResume(int userId, [FromForm] IFormFile file, [FromServices] IS3Service s3Service)
+
+
+
+
+
+        [HttpGet("download-url")]
+        public async Task<IActionResult> GetResumeDownloadUrl()
         {
-            if (file == null || file.Length == 0)
-            {
-                return BadRequest(new { message = "No file uploaded" });
-            }
-
-            var resume = await _service.GetResumeByUserId(userId);
-            if (resume == null)
-            {
-                return NotFound(new { message = "Resume not found for this user" });
-            }
-
-            // העלאת קובץ חדש ל-S3
-            string filePath = await s3Service.UploadFileAsync(file);
-
-            // עדכון הנתיב במסד הנתונים
-            resume.FilePath = filePath;
-            await _service.UpdateAsync(resume.Id, resume);
-
-            return Ok(new { message = "Resume updated successfully", filePath });
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
+            var url = await _service.GetDownloadUrlAsync(userId);
+            if (url == null) return NotFound("Resume not found.");
+            return Ok(new { downloadUrl = url });
         }
+
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdateResume([FromForm] IFormFile file)
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null)
+                    return Unauthorized("User not found");
+
+                if (!int.TryParse(userIdClaim.Value, out int userId))
+                    return BadRequest("Invalid user ID");
+
+                var fileUrl = await _service.UpdateResumeAsync(userId, file);
+                return Ok(new { fileUrl });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Update error: {ex}");
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
+
+
 
     }
 }

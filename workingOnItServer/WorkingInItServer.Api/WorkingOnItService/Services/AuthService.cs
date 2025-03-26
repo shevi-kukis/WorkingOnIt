@@ -53,43 +53,25 @@ namespace WorkingOnIt.Service.Services
             return _jwtService.GenerateToken(user);
         }
 
-        public async Task RegisterUserAsync(UserRegisterDto model)
+        public async Task<User?> RegisterUserAsync(UserRegisterDto model)
+
         {
-            // בדיקה אם המשתמש כבר קיים
-            var existingUser = (await _iManager.userRepository.GetAsync()).FirstOrDefault(u => u.Email == model.Email);
+            var user = (await _iManager.userRepository.GetAsync()).FirstOrDefault(u => u.Email == model.Email);
+            if (user != null)
+                throw new Exception("User already exist");
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(model.Password);
 
-            if (existingUser != null)
-            {
-                throw new Exception("User already exists with this email.");
-            }
-
-            // העלאת קובץ קורות חיים ל-S3
-            var filePath = await _s3Service.UploadFileAsync(model.Resume);
-
-            // יצירת משתמש חדש
-            var user = new User
+             user = new User
             {
                 FullName = model.FullName,
                 Email = model.Email,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.PasswordHash) // הצפנת הסיסמה
+                PasswordHash = hashedPassword
             };
 
-            // שמירה על המשתמש
-            await _iManager.userRepository.AddAsync(user);
+            _iManager.userRepository.AddAsync(user);
             await _iManager.SaveAsync();
 
-            // יצירת רשומה בטבלת קורות חיים
-            var resume = new Resume
-            {
-                UserId = user.Id,
-                FilePath = filePath,
-                FileName = model.Resume.FileName,
-                UploadDate = DateTime.UtcNow,
-            };
-
-            // שמירה על הרזומה
-            await _iManager.resumeRepository.AddAsync(resume);
-            await _iManager.SaveAsync();
+            return user;
         }
 
     }

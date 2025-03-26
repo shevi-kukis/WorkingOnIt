@@ -10,7 +10,6 @@ import { router } from './Router'
 
 
 import store from './store/store'
-import Interview from './components/Interview'
 
 
 function App() {
@@ -23,7 +22,7 @@ function App() {
            <Provider store={store}>
            <AuthProvider>
            <RouterProvider router={router} />
-           <Interview/>
+       
        
            </AuthProvider>
          </Provider>

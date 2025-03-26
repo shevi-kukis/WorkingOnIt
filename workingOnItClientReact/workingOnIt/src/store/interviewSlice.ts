@@ -2,7 +2,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { interviewState } from '../models/interview';
-import { StoreType } from './store';
+
 
 const API_PYTHON_BASE_URL = 'http://localhost:5000';
 
@@ -65,38 +65,31 @@ const interviewSlice = createSlice({
             if (state.currentQuestionIndex < state.questions.length - 1) {
                 state.currentQuestionIndex += 1;
             } else {
-                state.isInterviewFinished = true; // ✅ מסמן שהראיון הסתיים
+                state.isInterviewFinished = true;
             }
         },
+        addFeedback: (state, action) => {
+            state.feedbacks.push(action.payload);
+        }
     },
     extraReducers: (builder) => {
         builder
-            .addCase(uploadResume.pending, (state) => {
-                state.status = 'loading';
-            })
             .addCase(uploadResume.fulfilled, (state, action) => {
-                state.status = 'succeeded';
-                if (Array.isArray(action.payload) && action.payload.length > 1) {
-                    state.questions = action.payload.slice(1, -1);
-                } else {
-                    state.questions = action.payload;
-                }
-                state.isInterviewFinished = false; // ✅ מאפס את הסטטוס כשמתחיל ראיון חדש
-            })
-            .addCase(uploadResume.rejected, (state, action) => {
-                state.status = 'failed';
-                state.error = action.error.message;
+                state.questions = action.payload;
+                state.currentQuestionIndex = 0;
             })
             .addCase(checkAnswer.fulfilled, (state, action) => {
                 state.feedbacks.push(action.payload);
             })
-            .addCase(evaluateResponses.fulfilled, (state, action) => {
-                state.averageScore = action.payload.average_score;
-                state.summary = action.payload.summary;
-                state.isInterviewFinished = true; // ✅ מסמן שהראיון הסתיים
-            });
-    },
+     
+                    .addCase(evaluateResponses.fulfilled, (state, action) => {
+                        state.averageScore = action.payload.averageScore;
+                        state.summary = action.payload.summary;
+                        state.isInterviewFinished = true; // סימון שהראיון הסתיים
+                    });
+            }
+            
 });
 
-export const { resetInterview, nextQuestion } = interviewSlice.actions;
+export const { resetInterview, nextQuestion,addFeedback } = interviewSlice.actions;
 export default interviewSlice.reducer;

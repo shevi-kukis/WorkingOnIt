@@ -6,13 +6,13 @@ import React, { createContext, useContext, useReducer } from "react";
 interface AuthState {
   user: User | null;
   token: string | null;
-  resume:Resume|null;
+  resume: Resume | null;
 }
 interface Resume {
   id: number;
   fileName: string;
   filePath: string;
-  
+
 }
 
 interface User {
@@ -25,11 +25,16 @@ interface User {
 
 // 🔹 פעולות אפשריות (LOGIN, LOGOUT)
 type AuthAction =
-  | { type: "LOGIN"; payload: { user: User; token: string; resume: Resume  } }
-  | { type: "REGISTER"; payload: { user: User; token: string; resume: Resume  } }
+  | { type: "LOGIN"; payload: { user: User; token: string; resume: Resume } }
+
 
   | { type: "LOGOUT" }
-  | { type: "UPDATE_USER"; payload: Partial<User> };
+  | { type: "UPDATE_USER"; payload: Partial<User> }
+
+  | { type: "REGISTER"; payload: { user: User; token: string ; resume: Resume | null } }
+  | { type: "UPDATE_RESUME"; payload: Resume };
+
+
 
 // 🔹 סטייט ראשוני
 const initialState: AuthState = {
@@ -44,27 +49,32 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
     case "LOGIN":
       return {
         user: { ...action.payload.user },
-        resume:{...action.payload.resume} ,// הוספת resume
+        resume: { ...action.payload.resume },// הוספת resume
         token: action.payload.token,
       };
-      case "REGISTER":
-        return {
-          user: { ...action.payload.user },
-          resume:{...action.payload.resume} ,// הוספת resume
-          token: action.payload.token,
-        };
+
     case "LOGOUT":
-      return { user: null, token: null,resume:null };
+      return { user: null, token: null, resume: null };
 
     case "UPDATE_USER":
       return {
         ...state,
         user: state.user ? { ...state.user, ...action.payload } : null,
       };
-
+    case "REGISTER":
+   
+        return {
+          user: { ...action.payload.user },
+          resume:null,// הוספת resume
+          token: action.payload.token,
+        };
+    case "UPDATE_RESUME":
+      return { ...state, resume: action.payload };
     default:
       return state;
   }
+
+
 };
 
 

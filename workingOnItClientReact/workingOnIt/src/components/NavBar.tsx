@@ -17,6 +17,12 @@ const NavBar = () => {
                 <Link to={"/interviewTips"}>
                     <Button sx={{ color: "white" }}> 📖 tips for interview</Button> 
                 </Link>
+                <Link to={"/uploadResume"}>
+                    <Button sx={{ color: "white" }}> 📖 uploadResume</Button> 
+                </Link>
+                <Link to={"/interview"}>
+                    <Button sx={{ color: "white" }}> 📖 interview</Button> 
+                </Link>
             </Toolbar>
         </AppBar>
     );

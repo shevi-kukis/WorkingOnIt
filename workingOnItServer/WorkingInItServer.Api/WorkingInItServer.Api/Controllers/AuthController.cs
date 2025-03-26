@@ -1,8 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Sprache;
 using WorkingInIt.Api.ModalsDto;
+using WorkingOnIt.Core.Entities;
 using WorkingOnIt.Core.InterfaceService;
+using WorkingOnIt.Service.Services;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -25,37 +29,20 @@ namespace WorkingInIt.Api.Controllers
             _mapper = mapper;
             _resumeService = resumeService;
         }
-
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromForm] UserRegisterDto model)
+        public async Task<IActionResult> Register([FromBody] UserRegisterDto dto)
         {
-            try
-            {
-                Console.WriteLine($"FullName: {model.FullName}");
-                Console.WriteLine($"Email: {model.Email}");
-                Console.WriteLine($"PasswordHash: {model.PasswordHash}");
-                Console.WriteLine($"ResumeFile: {model.Resume.FileName}");
+            var user = await _service.RegisterUserAsync(dto);
+            if (user == null)
+                return BadRequest("Email already exists");
 
-                await _service.RegisterUserAsync(model); // קריאה אסינכרונית
+            // יצירת התוקן לאחר הרישום
+            var token = await _service.LoginAsync(new UserLoginDto { Email = dto.Email, Password = dto.Password });
 
-                var userLoginDto = new UserLoginDto
-                {
-                    Email = model.Email,
-                    Password = model.PasswordHash
-                };
+            return Ok(new { token, user });
 
-                // קריאה ישירה לשירות ההתחברות במקום לקרוא לפונקציה Login
-                var token = await _service.LoginAsync(userLoginDto);
-                var user = await _service.GetByEmailAsync(userLoginDto.Email);
-                var resume = await _resumeService.GetResumeByUserId(user.Id);
-
-                return Ok(new { token, user, resume });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = "Error registering user.", details = ex.Message });
-            }
         }
+
 
 
         [HttpPost("login")]

@@ -5,8 +5,13 @@ import AppLayout from "./components/Applayout";
 import Home from "./components/Home";
 import Register from "./components/Register";
 import Login from "./components/Login";
-import HomeLogin from "./components/homeLogin";
+
 import InterviewTips from "./pages/InterviewTips";
+import UploadResume from "./components/upLoadResume";
+import HomeLogin from "./components/HomeLogin";
+import Interview from "./components/Interview";
+import EditProfile from "./components/EditProfile";
+
 
 
 
@@ -91,7 +96,48 @@ export const router = createBrowserRouter([
            <InterviewTips/> </Box>
           ),
       },
-
+      {
+        path: 'uploadResume',
+        element: (<Box
+          sx={{
+            height: '100vh',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            color: 'white',
+          }}
+        >
+         <UploadResume/> </Box>
+        ),
+    },
+    {
+      path: 'interview',
+      element: (<Box
+        sx={{
+          height: '100vh',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          color: 'white',
+        }}
+      >
+       <Interview/> </Box>
+      ),
+  },
+  {
+    path: 'edit-profile',
+    element: (<Box
+      sx={{
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        color: 'white',
+      }}
+    >
+    <EditProfile/> </Box>
+    ),
+},
     ],
   },
 ]);

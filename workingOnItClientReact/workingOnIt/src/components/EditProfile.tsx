@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../utils/axiosInstance";
 import { useAuth } from "./AuthContext";
-
+import { useNavigate } from "react-router-dom";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from "@mui/material";
 
 const EditProfile: React.FC = () => {
   const { state, dispatch } = useAuth();
   const [fullName, setFullName] = useState(state.user?.fullName || "");
   const [email, setEmail] = useState(state.user?.email || "");
-  // const [password, setPassword] = useState("");
+  const [open, setOpen] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (state.user) {
@@ -22,14 +24,13 @@ const EditProfile: React.FC = () => {
       const response = await axiosInstance.put(`/User/update/${state.user?.id}`, {
         fullName,
         email,
-        
-         password: state.user?.password
-        // password: password || undefined, // לא שולחים אם לא שונה
-      
+        password: state.user?.password,
       });
 
       dispatch({ type: "UPDATE_USER", payload: response.data });
       alert("Profile updated successfully!");
+      setOpen(false);
+      navigate("/homeLogin");
     } catch (error) {
       console.error("Update failed", error);
       alert("Update failed");
@@ -37,12 +38,32 @@ const EditProfile: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleUpdate}>
-      <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="FullName" />
-      <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
-      {/* <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="New Password (optional)" /> */}
-      <button type="submit">Update Profile</button>
-    </form>
+    <Dialog open={open} onClose={() => setOpen(false)}>
+      <DialogTitle>Edit Profile</DialogTitle>
+      <DialogContent>
+        <form onSubmit={handleUpdate}>
+          <TextField 
+            fullWidth 
+            label="Full Name" 
+            value={fullName} 
+            onChange={(e) => setFullName(e.target.value)} 
+            margin="dense"
+          />
+          <TextField 
+            fullWidth 
+            label="Email" 
+            type="email" 
+            value={email} 
+            onChange={(e) => setEmail(e.target.value)} 
+            margin="dense"
+          />
+          <DialogActions>
+            <Button onClick={() => setOpen(false)}>Cancel</Button>
+            <Button type="submit" variant="contained" color="primary">Update Profile</Button>
+          </DialogActions>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 };
 

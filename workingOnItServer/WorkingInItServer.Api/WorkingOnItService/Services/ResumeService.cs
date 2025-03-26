@@ -1,4 +1,7 @@
-﻿using AutoMapper;
+﻿using Amazon.S3.Model;
+using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using Recipes.Service.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using WorkingOnIt.Core.Dtos;
@@ -8,11 +11,11 @@ using WorkingOnIt.Core.InterfaceService;
 
 namespace WorkingOnIt.Service.Services
 {
-    public class ResumeService(IRepositoryManager repositoryManager, IMapper mapper) : IResumeService
+    public class ResumeService(IRepositoryManager repositoryManager, IMapper mapper,IS3Service s3Service) : IResumeService
     {
         private readonly IRepositoryManager _iManager = repositoryManager;
         private readonly IMapper _mapper = mapper;
-
+        private readonly IS3Service _s3Service=s3Service;
         public async Task<List<ResumeDto>> GetAllAsync()
         {
             List<Resume> resumes = await _iManager.resumeRepository.GetAsync();
@@ -34,20 +37,58 @@ namespace WorkingOnIt.Service.Services
             return _mapper.Map<ResumeDto>(resume);
         }
 
-        public async Task<ResumeDto> UpdateAsync(int id, ResumeDto resumeDto)
+        public async Task<string> UploadResumeAsync(int userId, IFormFile file)
         {
-            var existingResume = await _iManager.resumeRepository.GetByIdAsync(id);
-            if (existingResume == null)
-                return null;
+            try
+            {
+                if (file == null || file.Length == 0)
+                    throw new ArgumentException("File is empty.");
 
-            // עדכון רק הנתיב של הקובץ כדי לא לדרוס שדות אחרים
-            existingResume.FilePath = resumeDto.FilePath;
+                var fileUrl = await _s3Service.UploadFileAsync(file);
 
-            await _iManager.resumeRepository.UpdateAsync(id, existingResume);
-            await _iManager.SaveAsync();
+                Console.WriteLine($"Uploading resume for User ID: {userId}");
+                Console.WriteLine($"File URL: {fileUrl}");
 
-            return _mapper.Map<ResumeDto>(existingResume);
+                var resume = new Resume
+                {
+                    UserId = userId,
+                    FilePath = fileUrl,
+                    FileName = file.FileName,
+                    UploadDate = DateTime.UtcNow
+                };
+
+                await _iManager.resumeRepository.AddAsync(resume);
+                await _iManager.SaveAsync(); // שמירת השינויים במסד הנתונים
+
+                return fileUrl;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in UploadResumeAsync: {ex}");
+                throw;
+            }
         }
+
+
+
+        public async Task<string> UpdateResumeAsync(int userId, IFormFile file)
+        {
+            var resume = await _iManager.resumeRepository.GetByUserIdAsync(userId);
+            if (resume != null)
+            {
+                await _s3Service.DeleteFileAsync(resume.FilePath);
+                _iManager.resumeRepository.DeleteAsync(resume.Id);
+            }
+
+            return await UploadResumeAsync(userId, file);
+        }
+
+        public async Task<string?> GetDownloadUrlAsync(int userId)
+        {
+            var resume = await _iManager.resumeRepository.GetByUserIdAsync(userId);
+            return resume != null ? await _s3Service.GeneratePresignedDownloadUrlAsync(resume.FilePath) : null;
+        }
+
 
 
         public async Task<bool> DeleteAsync(int id)
@@ -63,7 +104,7 @@ namespace WorkingOnIt.Service.Services
             return resume != null ? _mapper.Map<ResumeDto>(resume) : null;
         }
 
-
+      
     }
 
 

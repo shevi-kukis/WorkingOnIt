@@ -1,11 +1,12 @@
 import { Avatar } from "@mui/material";
 import { useAuth } from "./AuthContext";
 import { useNavigate } from "react-router-dom";
-import UpdateResume from "./update-resume";
+
 
 
 
 import FileUploader from "./FileUploader";
+import DownLoadResume from "./DownLaodResume";
 
 
 const HomeLogin = () => {
@@ -37,8 +38,9 @@ const HomeLogin = () => {
           <button onClick={() => navigate("/edit-profile")}>Edit Profile</button>
 
           {state.resume ? (
+      <DownLoadResume/>
         
-          <FileUploader resumeUrl={state.resume.filePath} />
+          // <FileUploader resumeUrl={state.resume.filePath} />
         //   <a href={state.resume.filePath} target="_blank" rel="noopener noreferrer">
         //   Download Resume
         // </a>
@@ -46,7 +48,7 @@ const HomeLogin = () => {
             <span>No resume uploaded</span>
           )}
 
-          <UpdateResume />
+       
         </>
       ) : (
         <span>Please log in</span>
