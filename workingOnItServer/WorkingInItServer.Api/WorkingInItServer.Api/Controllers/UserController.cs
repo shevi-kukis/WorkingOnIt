@@ -32,6 +32,7 @@ namespace WorkingInIt.Api.Controllers
         }
 
         // GET: api/<UserController>
+        [Authorize(Policy = "UserOrAdmin")]
         [HttpGet]
         public async Task<ActionResult<List<UserDto>>> Get()
         {
@@ -40,6 +41,7 @@ namespace WorkingInIt.Api.Controllers
         }
 
         // GET api/<UserController>/5
+        [Authorize(Policy = "UserOrAdmin")]
         [HttpGet("{id}")]
         public async Task<ActionResult<UserDto>> Get(int id)
         {
@@ -52,6 +54,7 @@ namespace WorkingInIt.Api.Controllers
         }
 
         // POST api/<UserController>
+        [Authorize(Policy = "UserOrAdmin")]
         [HttpPost]
         public async Task<ActionResult<bool>> Post([FromBody] UserDto value)
         {
@@ -62,6 +65,7 @@ namespace WorkingInIt.Api.Controllers
         }
 
         // PUT api/<UserController>/5
+        [Authorize(Policy = "UserOrAdmin")]
         [HttpPut("{id}")]
         public async Task<ActionResult<UserDto>> Put(int id, [FromBody] UserDto value)
         {
@@ -70,6 +74,7 @@ namespace WorkingInIt.Api.Controllers
         }
 
         // DELETE api/<UserController>/5
+        [Authorize(Policy = "AdminOnly")]
         [HttpDelete("{id}")]
         public async Task<ActionResult<bool>> Delete(int id)
         {
@@ -77,7 +82,10 @@ namespace WorkingInIt.Api.Controllers
             return result ? Ok(true) : NotFound();
         }
 
-       
+        [Authorize(Policy = "UserOrAdmin")]
+     
+
+
         [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] UserUpdateDto userUpdateDto)
         {
@@ -92,6 +100,7 @@ namespace WorkingInIt.Api.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+        [Authorize(Policy = "UserOrAdmin")]
 
         private string GetUserIdFromClaims()
         {
@@ -102,6 +111,7 @@ namespace WorkingInIt.Api.Controllers
             }
             return userId;
         }
+        [Authorize(Policy = "UserOrAdmin")]
 
         [HttpPost("update-resume")]
         public async Task<IActionResult> UpdateResume([FromForm] IFormFile resumeFile)

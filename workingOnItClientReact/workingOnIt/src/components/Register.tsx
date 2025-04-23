@@ -40,9 +40,11 @@ const handleRegister = async (e: React.FormEvent) => {
       payload: {
         user: response.data.user,
         token: response.data.token, // הטוקן יתקבל בהתחברות
-        resume: null,
+        resume: response.data.resume || null, // אם תחזירי בעתיד
+
       },
     });
+    localStorage.setItem("token", response.data.token);
 
     setOpen(false);
     navigate("/homeLogin");

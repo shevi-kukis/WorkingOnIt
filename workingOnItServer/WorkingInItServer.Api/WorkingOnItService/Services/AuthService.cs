@@ -1,10 +1,6 @@
 ﻿using AutoMapper;
 using Recipes.Service.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 using WorkingInIt.Api.ModalsDto;
 using WorkingOnIt.Core.Dtos;
 using WorkingOnIt.Core.Entities;
@@ -44,7 +40,13 @@ namespace WorkingOnIt.Service.Services
 
         public async Task<string> LoginAsync(UserLoginDto userLoginDto)
         {
-            var user = (await _iManager.userRepository.GetAsync()).FirstOrDefault(u => u.Email == userLoginDto.Email);
+            //var user = (await _iManager.userRepository.GetAsync()).FirstOrDefault(u => u.Email == userLoginDto.Email);
+            var user = (await _iManager.userRepository.GetAsyncFull(includes: u => u.Role))
+    .FirstOrDefault(u => u.Email == userLoginDto.Email);
+            Console.WriteLine($"Trying login: {userLoginDto.Email}, Pass: {userLoginDto.Password}");
+            Console.WriteLine($"User found: {user != null}, Hashed: {user?.PasswordHash}");
+            bool isValid = BCrypt.Net.BCrypt.Verify(userLoginDto.Password, user.PasswordHash);
+            Console.WriteLine($"Password valid? {isValid}");
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(userLoginDto.Password, user.PasswordHash))
 
@@ -54,25 +56,27 @@ namespace WorkingOnIt.Service.Services
         }
 
         public async Task<User?> RegisterUserAsync(UserRegisterDto model)
-
         {
             var user = (await _iManager.userRepository.GetAsync()).FirstOrDefault(u => u.Email == model.Email);
             if (user != null)
                 throw new Exception("User already exist");
+
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(model.Password);
 
-             user = new User
+            user = new User
             {
                 FullName = model.FullName,
                 Email = model.Email,
                 PasswordHash = hashedPassword
             };
 
-            _iManager.userRepository.AddAsync(user);
+            // ✅ הוספת await כאן:
+            await _iManager.userRepository.AddAsync(user);
             await _iManager.SaveAsync();
 
             return user;
         }
+
 
     }
 }

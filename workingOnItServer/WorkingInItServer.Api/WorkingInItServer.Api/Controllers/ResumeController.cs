@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Recipes.Service.Services;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -16,12 +17,14 @@ namespace WorkingInIt.Api.Controllers
         private readonly IResumeService _service = service;
 
         // GET: api/Resume
+        [Authorize(Policy = "UserOrAdmin")]
         [HttpGet]
         public async Task<ActionResult<List<ResumeDto>>> Get()
         {
             var result = await _service.GetAllAsync();
             return Ok(result);
         }
+        [Authorize(Policy = "UserOrAdmin")]
 
         // GET api/Resume/5
         [HttpGet("{id}")]
@@ -34,6 +37,7 @@ namespace WorkingInIt.Api.Controllers
         }
 
         // POST api/Resume
+        [Authorize(Policy = "UserOrAdmin")]
         [HttpPost]
         public async Task<ActionResult<ResumeDto>> Post([FromBody] ResumeDto value)
         {
@@ -52,7 +56,7 @@ namespace WorkingInIt.Api.Controllers
         //        return NotFound();
         //    return Ok(result);
         //}
-
+        [Authorize(Policy = "UserOrAdmin")]
         [HttpPost("upload")]
         public async Task<IActionResult> UploadResume([FromForm] IFormFile file)
         {
@@ -79,7 +83,7 @@ namespace WorkingInIt.Api.Controllers
 
 
 
-
+        [Authorize(Policy = "UserOrAdmin")]
 
         [HttpGet("download-url")]
         public async Task<IActionResult> GetResumeDownloadUrl()
@@ -89,6 +93,7 @@ namespace WorkingInIt.Api.Controllers
             if (url == null) return NotFound("Resume not found.");
             return Ok(new { downloadUrl = url });
         }
+        [Authorize(Policy = "UserOrAdmin")]
 
         [HttpPut("update")]
         public async Task<IActionResult> UpdateResume([FromForm] IFormFile file)

@@ -30,18 +30,25 @@ namespace WorkingInIt.Api.Controllers
             _resumeService = resumeService;
         }
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] UserRegisterDto dto)
-        {
-            var user = await _service.RegisterUserAsync(dto);
-            if (user == null)
-                return BadRequest("Email already exists");
+public async Task<IActionResult> Register([FromBody] UserRegisterDto dto)
+{
+    try
+    {
+        var user = await _service.RegisterUserAsync(dto);
+        if (user == null)
+            return BadRequest("Email already exists");
 
-            // יצירת התוקן לאחר הרישום
-            var token = await _service.LoginAsync(new UserLoginDto { Email = dto.Email, Password = dto.Password });
+        var token = await _service.LoginAsync(new UserLoginDto { Email = dto.Email, Password = dto.Password });
 
-            return Ok(new { token, user });
+        return Ok(new { token, user });
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ Register error: {ex.Message}");
+        return StatusCode(500, new { message = ex.Message });
+    }
+}
 
-        }
 
 
 

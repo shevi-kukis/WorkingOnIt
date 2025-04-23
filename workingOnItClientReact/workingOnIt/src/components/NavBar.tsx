@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import { AppBar, Toolbar, Button } from "@mui/material";
+import { useAuth } from "./AuthContext";
 
 const NavBar = () => {
+
     return (
         <AppBar position="fixed" sx={{ bgcolor: "error.main", top: 0, left: 0, width: "100%", zIndex: 1100 }}>
             <Toolbar sx={{ justifyContent: "flex-end" }}>
@@ -20,6 +22,7 @@ const NavBar = () => {
                 <Link to={"/uploadResume"}>
                     <Button sx={{ color: "white" }}> 📖 uploadResume</Button> 
                 </Link>
+              
                 <Link to={"/interview"}>
                     <Button sx={{ color: "white" }}> 📖 interview</Button> 
                 </Link>

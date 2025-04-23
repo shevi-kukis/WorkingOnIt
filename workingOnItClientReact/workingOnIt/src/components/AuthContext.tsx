@@ -20,6 +20,7 @@ interface User {
   fullName: string;
   email: string;
   password: string;
+  role: number;
   // resume?: Resume | null; // נוסיף את ה-Resume
 }
 
@@ -61,13 +62,13 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         ...state,
         user: state.user ? { ...state.user, ...action.payload } : null,
       };
-    case "REGISTER":
-   
+      case "REGISTER":
         return {
           user: { ...action.payload.user },
-          resume:null,// הוספת resume
+          resume: action.payload.resume ? { ...action.payload.resume } : null,
           token: action.payload.token,
         };
+      
     case "UPDATE_RESUME":
       return { ...state, resume: action.payload };
     default:

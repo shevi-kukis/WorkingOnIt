@@ -49,11 +49,18 @@ namespace WorkingOnIt.Service.Services
         public async Task<UserDto> AddAsync(UserDto userDto)
         {
             User user = _mapper.Map<User>(userDto);
+            var role = await _iManager.rolesRepsoitory.GetRoleByName("User");
+            if (role == null)
+            {
+                throw new InvalidOperationException("Role does not exist.");
+            }
             user = await _iManager.userRepository.AddAsync(user);
             if (user != null)
                 await _iManager.SaveAsync();
 
             userDto = _mapper.Map<UserDto>(user);
+            userDto.Role = role;
+
             return userDto;
         }
 

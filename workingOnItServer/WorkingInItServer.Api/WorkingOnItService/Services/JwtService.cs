@@ -17,13 +17,26 @@ public class JwtService
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSecret));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Email, user.Email)
         };
 
+        // 📌 לוודא שהתפקיד נטען כראוי
+        if (!string.IsNullOrEmpty(user.Role?.NameRole))
+        {
+            claims.Add(new Claim(ClaimTypes.Role, user.Role.NameRole));
+        }
+        else
+        {
+            throw new Exception("User role is missing!");
+        }
+
         var token = new JwtSecurityToken(
+            issuer: "https://yourdomain.com", // 📌 הוסף Issuer
+            audience: "https://yourdomain.com", // 📌 הוסף Audience
             claims: claims,
             expires: DateTime.UtcNow.AddHours(2),
             signingCredentials: creds

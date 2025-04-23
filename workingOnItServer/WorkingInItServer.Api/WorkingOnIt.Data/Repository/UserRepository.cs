@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using WorkingOnIt.Core.Entities;
@@ -14,6 +15,17 @@ namespace WorkingOnIt.Data.Repository
         public UserRepository(DataContext context) : base(context)
         {
         }
-   
+        public async Task<IEnumerable<User>> GetAsyncFull(params Expression<Func<User, object>>[] includes)
+        {
+            IQueryable<User> query = _dbSet;
+
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+
+            return await query.ToListAsync();
+        }
+
     }
 }

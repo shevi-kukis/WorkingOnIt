@@ -24,6 +24,9 @@ const Question: React.FC<QuestionProps> = ({ question, onFeedbackReceived }) => 
         setLoading(true);
         try {
             const feedback = await dispatch(checkAnswer({ question, answer })).unwrap();
+            console.log("Feedback:", feedback);
+            console.log("Answer:", answer);
+            console.log("Question:", question);
             onFeedbackReceived(feedback);
         } catch (error) {
             console.error('Error checking answer:', error);

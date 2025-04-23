@@ -29,20 +29,26 @@ internal class Program
         string awsSecretKey = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
         string awsRegion = Environment.GetEnvironmentVariable("AWS_REGION");
         string bucketName = Environment.GetEnvironmentVariable("AWS_BUCKET_NAME");
-        Console.WriteLine($"✅ JWT_SECRET: {jwtSecret}");
-        Console.WriteLine($"✅ AWS_ACCESS_KEY_ID: {awsAccessKey}");
+   
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IInterviewQuestionsService, InterviewQuestionsService>();
         builder.Services.AddScoped<IInterviewService, InterviewService>();
         builder.Services.AddScoped<IResumeService, ResumeService>();
+        builder.Services.AddScoped<IRoleService, RoleService>();
+
         builder.Services.AddScoped<IAuthService, AuthService>();
 
         builder.Services.AddScoped<IUserRepository, UserRepository>();
+        builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+
         builder.Services.AddScoped<IInterviewQuestionsRepository, InterviewQuestionsRepository>();
         builder.Services.AddScoped<IInterviewRepository, InterviewRepository>();
         builder.Services.AddScoped<IResumeRepository, ResumeRepository>();
 
 
+        builder.Services.AddControllers()
+    .AddJsonOptions(x =>
+        x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles);
 
         builder.Services.AddScoped(typeof(IRepositoryManager), typeof(RepositoryManager));
         builder.Services.AddScoped(typeof(IRepositoryGeneric<>), typeof(RepositoryGeneric<>));
@@ -69,6 +75,13 @@ internal class Program
                        .AllowAnyMethod()  // מאפשר כל סוג בקשה (GET, POST, וכו')
                        .AllowAnyHeader(); // מאפשר כל כותרת בבקשה
             });
+        });
+        //jwt extensions
+        builder.Services.AddAuthorization(options =>
+        {
+            options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+            options.AddPolicy("UserOrAdmin", policy => policy.RequireRole("User", "Admin"));
+            options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
         });
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

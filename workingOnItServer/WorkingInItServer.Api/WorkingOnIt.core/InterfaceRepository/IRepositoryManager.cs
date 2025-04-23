@@ -15,6 +15,8 @@ namespace WorkingOnIt.Core.InterfaceRepository
 
         IInterviewQuestionsRepository interviewQuestionsRepository { get; }
         IInterviewRepository interviewRepository { get; }
+        public IRoleRepository rolesRepsoitory { get; }
+
 
         public Task SaveAsync();
 

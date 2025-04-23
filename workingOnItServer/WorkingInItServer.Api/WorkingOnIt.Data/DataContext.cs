@@ -16,6 +16,7 @@ namespace WorkingOnIt.Data
         public DbSet<Interview> Interviews { get; set; }
         public DbSet<InterviewQuestion> InterviewQuestions { get; set; }
 
+        public DbSet<Role> Roles { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
