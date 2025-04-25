@@ -1,70 +1,181 @@
-import React, { useState, useEffect } from "react";
-import axiosInstance from "../utils/axiosInstance";
-import { useAuth } from "./AuthContext";
-import { useNavigate } from "react-router-dom";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from "@mui/material";
+"use client"
 
-const EditProfile: React.FC = () => {
-  const { state, dispatch } = useAuth();
-  const [fullName, setFullName] = useState(state.user?.fullName || "");
-  const [email, setEmail] = useState(state.user?.email || "");
-  const [open, setOpen] = useState(true);
-  const navigate = useNavigate();
+import type React from "react"
 
-  useEffect(() => {
-    if (state.user) {
-      setFullName(state.user.fullName);
-      setEmail(state.user.email);
-    }
-  }, [state.user]);
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import {
+  Container,
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Paper,
+  Grid,
+  Avatar,
+  IconButton,
+  Divider,
+  Alert,
+  useTheme,
+} from "@mui/material"
+import PhotoCameraIcon from "@mui/icons-material/PhotoCamera"
+import SaveIcon from "@mui/icons-material/Save"
+import ArrowBackIcon from "@mui/icons-material/ArrowBack"
+import { useAuth } from "./AuthContext"
+import axiosInstance from "./axiosInstance"
+// Remove incorrect import
+// import { Update } from "@mui/icons-material"
 
-  const handleUpdate = async (e: React.FormEvent) => {
-    e.preventDefault();
+// Define or import the correct Update action
+
+
+const EditProfile = () => {
+  const { state, dispatch } = useAuth()
+  const navigate = useNavigate()
+  const theme = useTheme()
+
+  const [formData, setFormData] = useState({
+    fullName: state.user?.fullName || "",
+   
+    email: state.user?.email || "",
+
+  })
+
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError("")
+
+    setSuccess(false)
+  
     try {
+      // Keep existing update logic
       const response = await axiosInstance.put(`/User/update/${state.user?.id}`, {
-        fullName,
-        email,
+        fullName: formData.fullName,
+        email: formData.email,
         password: state.user?.password,
       });
-
-      dispatch({ type: "UPDATE_USER", payload: response.data });
-      alert("Profile updated successfully!");
-      setOpen(false);
-      navigate("/homeLogin");
-    } catch (error) {
-      console.error("Update failed", error);
-      alert("Update failed");
+      dispatch({ type: "UPDATE_USER", payload: { ...formData } })
+  
+      setSuccess(true)
+      setTimeout(() => {
+        setSuccess(false)
+      }, 3000)
+    } catch (err) {
+      setError("Failed to update profile. Please try again.")
+    } finally {
+      setLoading(false)
     }
-  };
+  }
 
   return (
-    <Dialog open={open} onClose={() => setOpen(false)}>
-      <DialogTitle>Edit Profile</DialogTitle>
-      <DialogContent>
-        <form onSubmit={handleUpdate}>
-          <TextField 
-            fullWidth 
-            label="Full Name" 
-            value={fullName} 
-            onChange={(e) => setFullName(e.target.value)} 
-            margin="dense"
-          />
-          <TextField 
-            fullWidth 
-            label="Email" 
-            type="email" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            margin="dense"
-          />
-          <DialogActions>
-            <Button onClick={() => setOpen(false)}>Cancel</Button>
-            <Button type="submit" variant="contained" color="primary">Update Profile</Button>
-          </DialogActions>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
-};
+    <Container maxWidth="md" sx={{ py: 4 }}>
+      <Paper elevation={2} sx={{ p: 4, borderRadius: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
+          <IconButton color="primary" aria-label="back" onClick={() => navigate(-1)} sx={{ mr: 2 }}>
+            <ArrowBackIcon />
+          </IconButton>
+          <Typography variant="h4" component="h1" color="primary">
+            Edit Profile
+          </Typography>
+        </Box>
 
-export default EditProfile;
+        {success && (
+          <Alert severity="success" sx={{ mb: 3 }}>
+            Profile updated successfully!
+          </Alert>
+        )}
+
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {error}
+          </Alert>
+        )}
+
+        <Box component="form" onSubmit={handleSubmit}>
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={4} sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+              <Avatar
+                sx={{
+                  width: 120,
+                  height: 120,
+                  bgcolor: theme.palette.primary.main,
+                  fontSize: "3rem",
+                  mb: 2,
+                }}
+              >
+                {formData.fullName.charAt(0)}
+         
+              </Avatar>
+              <Box sx={{ position: "relative" }}>
+                <input accept="image/*" style={{ display: "none" }} id="icon-button-file" type="file" />
+                <label htmlFor="icon-button-file">
+                  <Button variant="outlined" component="span" startIcon={<PhotoCameraIcon />} sx={{ mt: 1 }}>
+                    Change Photo
+                  </Button>
+                </label>
+              </Box>
+            </Grid>
+
+            <Grid item xs={12} md={8}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Name"
+                    name="fullName"
+                    value={formData.fullName}
+                    onChange={handleChange}
+                    required
+                  />
+                </Grid>
+             
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    disabled
+                    helperText="Email cannot be changed"
+                  />
+                </Grid>
+              
+               
+              </Grid>
+            </Grid>
+          </Grid>
+
+          <Divider sx={{ my: 4 }} />
+
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Button variant="outlined" color="primary" onClick={() => navigate("/update-resume")}>
+              Update Resume
+            </Button>
+            <Button type="submit" variant="contained" color="primary" startIcon={<SaveIcon />} disabled={loading}>
+              {loading ? "Saving..." : "Save Changes"}
+            </Button>
+          </Box>
+        </Box>
+      </Paper>
+    </Container>
+  )
+}
+
+export default EditProfile
+
+

@@ -1,16 +1,10 @@
-// "use client"
+"use client"
 
 import { useState, useEffect } from "react"
 import { ThemeProvider, createTheme } from "@mui/material/styles"
 import CssBaseline from "@mui/material/CssBaseline"
-import Router from "./Router"
 
-import "./App.css" // Make sure to import the CSS
-import { Provider } from "react-redux"
-import { RouterProvider } from "react-router"
-import store from "./store/store"
-import { AuthProvider } from "./components/AuthContext"
-// import { AuthProvider } from "./components/AuthContext"
+import React from "react"
 
 const theme = createTheme({
   palette: {
@@ -130,18 +124,9 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      
-      <Provider store={store}>
-           <AuthProvider>
-           <Router />
-      
-       
-           </AuthProvider>
-         </Provider>
-   
+  
     </ThemeProvider>
   )
 }
 
 export default App
-

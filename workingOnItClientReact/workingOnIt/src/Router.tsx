@@ -1,144 +1,108 @@
-import { createBrowserRouter, Outlet } from "react-router";
+"use client"
 
-import { Box } from "@mui/material";
-import AppLayout from "./components/Applayout";
-import Home from "./components/Home";
-import Register from "./components/Register";
-import Login from "./components/Login";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
+import AppLayout from "./components/Applayout"
+import Home from "./components/Home"
+import Login from "./components/Login"
+import Register from "./components/Register"
+import Interview from "./components/Interview"
+import InterviewTips from "./components/InterviewTips"
+import EditProfile from "./components/EditProfile"
+// import UpdateResume from "./components/UpdateResume"
+import UpLoadResume from "./components/UpLoadResume"
 
-import InterviewTips from "./pages/InterviewTips";
-import UploadResume from "./components/upLoadResume";
-import HomeLogin from "./components/HomeLogin";
-import Interview from "./components/Interview";
-import EditProfile from "./components/EditProfile";
+import { useAuth } from "./components/AuthContext"
+import type { JSX } from "react/jsx-runtime"
+import DownLaodResume from "./components/DownLaodResume"
+import InterviewFeedback from "./components/InterviewFeedback"
 
+// Protected route component
+const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
+  const { state } = useAuth()
 
+  if (!state.token) {
+    return <Navigate to="/login" replace />
+  }
 
+  return children
+}
 
-
-export const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <AppLayout />,
-    errorElement: <h1>error</h1>,
-    children: [
-      {
-        path: 'Home',
-        element: (
-          <Box
-            sx={{
-
-              height: '100vh',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              color: 'white',
-            }}
-          >
-            <Home />
-          </Box>
-        ),
-      },
-      {
-        path: 'signUp',
-        element: (
-          <Box
-            sx={{
-              height: '100vh',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              color: 'white',
-            }}
-          >
-            <Register />
-          </Box>
-        ),
-      },
-      {
-        path: 'signIn',
-        element: (<Box
-          sx={{
-            height: '100vh',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            color: 'white',
-          }}
-        >
-          <> <Login />   <Outlet /> </></Box>
-        ),
-
-      },  {
-        path: 'homeLogin',
-        element: (<Box
-          sx={{
-            height: '100vh',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            color: 'white',
-          }}
-        >
-         <HomeLogin/> </Box>
-        )},
-        {
-          path: 'interviewTips',
-          element: (<Box
-            sx={{
-              height: '100vh',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              color: 'white',
-            }}
-          >
-           <InterviewTips/> </Box>
-          ),
-      },
-      {
-        path: 'uploadResume',
-        element: (<Box
-          sx={{
-            height: '100vh',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            color: 'white',
-          }}
-        >
-         <UploadResume/> </Box>
-        ),
-    },
-    {
-      path: 'interview',
-      element: (<Box
-        sx={{
-          height: '100vh',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          color: 'white',
-        }}
-      >
+const Router = () => {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <AppLayout>
+              <Home />
+            </AppLayout>
+          }
+        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route
+          path="/interview"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Interview />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/interview-tips"
+          element={
+            <AppLayout>
+              <InterviewTips />
+            </AppLayout>
+          }
+        />
+        <Route
+          path="/edit-profile"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <EditProfile />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        {/* <Route
+          path="/update-resume"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <UpdateResume />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        /> */}
+        <Route
+          path="/uploadResume"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <UpLoadResume />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/download-resume"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <DownLaodResume />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
         
-       <Interview/> </Box>
-      ),
-  },
-  {
-    path: 'edit-profile',
-    element: (<Box
-      sx={{
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        color: 'white',
-      }}
-    >
-    <EditProfile/> </Box>
-    ),
-},
-    ],
-  },
-]);
+      </Routes>
+    </BrowserRouter>
+  )
+}
+
+export default Router

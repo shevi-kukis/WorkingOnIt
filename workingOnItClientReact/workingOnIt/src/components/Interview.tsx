@@ -1,169 +1,390 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useAuth } from './AuthContext';
-import Question from './Question';
+// "use client"
+
+// import React, { useEffect, useState } from "react"
+// import { useDispatch, useSelector } from "react-redux"
+// import {
+//   Container,
+//   Box,
+//   Typography,
+//   Button,
+//   Paper,
+//   Grid,
+//   CircularProgress,
+//   Chip,
+//   Card,
+//   CardContent,
+//   Divider,
+// } from "@mui/material"
+// import { useTheme } from "@mui/material/styles"
+// import { useAuth } from "./AuthContext"
+// import {
+//   checkAnswer,
+//   nextQuestion,
+//   addFeedback,
+//   uploadResume,
+//   evaluateResponses,
+// } from "../store/interviewSlice"
+// import { StoreType } from "../store/store"
+// import { List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
+// import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+// import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+// const InterviewReduxStyled = () => {
+//   const dispatch = useDispatch()
+//   const theme = useTheme()
+//   const { state } = useAuth()
+
+//   const [answer, setAnswer] = useState("")
+//   const [interviewStarted, setInterviewStarted] = useState(false)
+
+//   const questions = useSelector((state: StoreType) => state.interview.questions)
+//   const currentQuestionIndex = useSelector((state: StoreType) => state.interview.currentQuestionIndex)
+//   const feedbacks = useSelector((state: StoreType) => state.interview.feedbacks as unknown as { feedback: string; score: number }[])
+//   const isFinished = useSelector((state: StoreType) => state.interview.isInterviewFinished)
+//   const averageScore = useSelector((state: StoreType) => state.interview.averageScore)
+//   const summary = useSelector((state: StoreType) => state.interview.summary)
+//   const resumeFilePath = state.resume?.filePath
+//   const strengths = summary[0] || [];
+//   const toImprove = summary[1] || [];
+//   useEffect(() => {
+//     if (resumeFilePath && interviewStarted) {
+//       console.log("Uploading resume...")
+//       dispatch(uploadResume(resumeFilePath))
+//     }
+//   }, [resumeFilePath, interviewStarted, dispatch])
+//   useEffect(() => {
+//     if (resumeFilePath && interviewStarted) {
+//       console.log("Uploading resume...")
+//       dispatch(uploadResume(resumeFilePath))
+//     }
+//   }, [])
+//   const handleSubmitAnswer = async () => {
+//     if (!answer.trim()) return
+
+//     const currentQuestion = questions[currentQuestionIndex]
+//     const result = await dispatch(checkAnswer({ question: currentQuestion, answer })).unwrap()
+//     dispatch(addFeedback(result))
+
+//     if (currentQuestionIndex >= questions.length - 1) {
+//       dispatch(evaluateResponses())
+//     } else {
+//       dispatch(nextQuestion())
+//     }
+
+//     setAnswer("")
+//   }
+
+//   const startInterview = () => {
+//     setInterviewStarted(true)
+//   }
+
+//   if (!interviewStarted) {
+//     return (
+//       <Container maxWidth="sm" sx={{ textAlign: "center", mt: 8 }}>
+//         <Typography variant="h4" color="primary" gutterBottom>
+//           סימולציית ראיון עבודה
+//         </Typography>
+//         <Typography variant="body1" paragraph>
+//           כדי להתחיל את הראיון, לחצי על הכפתור הבא:
+//         </Typography>
+//         <Button variant="contained" color="primary" onClick={startInterview}>
+//           🚀 התחל ראיון
+//         </Button>
+//       </Container>
+//     )
+//   }
+//   function FinalMark(results: { feedback: string; score: number }[]) {
+//     return results.reduce((total, item) => total + item.score, 0);
+//   }
+  
+
+//   return (
+//     <Container maxWidth="lg" sx={{ py: 4 }}>
+//       <Grid container spacing={4}>
+//         <Grid item xs={12} md={8}>
+//           <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+//             {!isFinished ? (
+//               <>
+//                 <Typography variant="h5" color="primary" gutterBottom>
+//                   שאלה {currentQuestionIndex + 1}:
+//                 </Typography>
+//                 <Typography variant="body1" paragraph>
+//                   {questions[currentQuestionIndex]}
+//                 </Typography>
+//                 <textarea
+//                   rows={6}
+//                   value={answer}
+//                   onChange={(e) => setAnswer(e.target.value)}
+//                   placeholder="כתבי את תשובתך כאן..."
+//                   style={{ width: "100%", padding: 12, fontSize: "1rem", borderRadius: 8 }}
+//                 />
+//                 <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+//                   <Button
+//                     variant="contained"
+//                     color="primary"
+//                     onClick={handleSubmitAnswer}
+//                     disabled={!answer.trim()}
+//                   >
+//                     שלחי תשובה
+//                   </Button>
+//                 </Box>
+//               </>
+//             ) : (
+//               <Box textAlign="center">
+//                 <Typography variant="h4" color="primary" gutterBottom>
+//                   הראיון הסתיים!
+//                 </Typography>
+//                 <Typography variant="body1" paragraph>
+//                   תודה על השתתפותך. להלן המשוב שלך:
+//                 </Typography>
+//               </Box>
+//             )}
+//           </Paper>
+//         </Grid>
+
+//         <Grid item xs={12} md={4}>
+//           <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+//             {isFinished ? (
+//               <>
+//                 <Box textAlign="center" mb={3}>
+//                   <CircularProgress
+//                     variant="determinate"
+//                     value={averageScore ?? 0}
+//                     size={100}
+//                     thickness={5}
+//                     color="primary"
+//                   />
+//                   <Typography variant="h5" color="primary" mt={2}>
+//                     ציון : {FinalMark(feedbacks)}% מתוך 100%
+//                   </Typography>
+//                 </Box>
+
+//                 <div>
+//                 const strengths = summary[0] || [];
+//                 const toImprove = summary[1] || [];
+//       <Typography variant="h6" gutterBottom color="primary">
+//         סיכום
+//       </Typography>
+
+//       <Typography variant="subtitle1" color="secondary">
+//         חוזקות:
+//       </Typography>
+//       <List dense>
+//         {strengths.map((point, index) => (
+//           <ListItem key={`strength-${index}`}>
+//             <ListItemIcon>
+//               <CheckCircleIcon color="success" />
+//             </ListItemIcon>
+//             <ListItemText primary={point} />
+//           </ListItem>
+//         ))}
+//       </List>
+
+//       <Typography variant="subtitle1" color="error">
+//         נקודות לשיפור:
+//       </Typography>
+//       <List dense>
+//         {toImprove.map((point, index) => (
+//           <ListItem key={`improve-${index}`}>
+//             <ListItemIcon>
+//               <ErrorOutlineIcon color="error" />
+//             </ListItemIcon>
+//             <ListItemText primary={point} />
+//           </ListItem>
+//         ))}
+//       </List>
+//     </div>
+//               </>
+//             ) : (
+//               <>
+//                 <Typography variant="h6" color="primary" gutterBottom>
+//                   תשובות קודמות
+//                 </Typography>
+//                 {feedbacks.map((f, i) => (
+//                   <Card key={i} sx={{ mb: 2 }}>
+//                     <CardContent>
+//                       <Typography variant="subtitle2" color="primary">
+//                         שאלה {i + 1}
+//                       </Typography>
+//                       <Typography variant="body2" gutterBottom>
+//                         {questions[i]}
+//                       </Typography>
+//                       <Divider sx={{ my: 1 }} />
+//                       <Typography variant="subtitle2">משוב:</Typography>
+//                       <Typography variant="body2">{f.feedback}</Typography>
+//                       <Chip label={`ציון: ${f.score}%`} sx={{ mt: 1 }} color="success" />
+//                     </CardContent>
+//                   </Card>
+//                 ))}
+//               </>
+//             )}
+//           </Paper>
+//         </Grid>
+//       </Grid>
+//     </Container>
+//   )
+// }
+
+// export default InterviewReduxStyled
+import React, { useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import {
+  Container,
+  Box,
+  Typography,
+  Button,
+  Paper,
+  Grid,
+  CircularProgress,
+  Chip,
+  Card,
+  CardContent,
+  Divider,
+} from "@mui/material"
+import { useTheme } from "@mui/material/styles"
+import { useAuth } from "./AuthContext"
 import {
   checkAnswer,
   nextQuestion,
   addFeedback,
   uploadResume,
-  evaluateResponses
-} from '../store/interviewSlice';
-import { StoreType } from '../store/store';
-import { motion, AnimatePresence } from 'framer-motion';
-
+  evaluateResponses,
+} from "../store/interviewSlice"
+import { StoreType } from "../store/store"
+import InterviewFeedback from "./InterviewFeedback"
 
 const Interview = () => {
-  const dispatch = useDispatch();
-  const { state } = useAuth();
+  const dispatch = useDispatch()
+  const theme = useTheme()
+  const { state } = useAuth()
 
-  const [interviewStarted, setInterviewStarted] = useState(false);
-  const [openFeedbackIndexes, setOpenFeedbackIndexes] = useState<number[]>([]);
+  const [answer, setAnswer] = useState("")
+  const [interviewStarted, setInterviewStarted] = useState(false)
 
-  const questions = useSelector((state: StoreType) => state.interview.questions);
-  const currentQuestionIndex = useSelector((state: StoreType) => state.interview.currentQuestionIndex);
-  const isInterviewFinished = useSelector((state: StoreType) => state.interview.isInterviewFinished);
-  const feedbacks = useSelector((state: StoreType) => state.interview.feedbacks);
-  const averageScore = useSelector((state: StoreType) => state.interview.averageScore);
-  const summary = useSelector((state: StoreType) => state.interview.summary);
-
-  const resumeFilePath = state.resume?.filePath;
-
-  useEffect(() => {
-    console.log("Average Score:", averageScore);
-  }, [averageScore]);
+  const questions = useSelector((state: StoreType) => state.interview.questions)
+  const currentQuestionIndex = useSelector((state: StoreType) => state.interview.currentQuestionIndex)
+  const feedbacks = useSelector((state: StoreType) => state.interview.feedbacks as unknown as { feedback: string; score: number }[])
+  const isFinished = useSelector((state: StoreType) => state.interview.isInterviewFinished)
+  const averageScore = useSelector((state: StoreType) => state.interview.averageScore)
+  const summary = useSelector((state: StoreType) => state.interview.summary as unknown as string[][])
+  const resumeFilePath = state.resume?.filePath
 
   useEffect(() => {
     if (resumeFilePath && interviewStarted) {
-      dispatch(uploadResume(resumeFilePath));
+      dispatch(uploadResume(resumeFilePath))
     }
-  }, [resumeFilePath, interviewStarted]);
+  }, [resumeFilePath, interviewStarted, dispatch])
 
-  const handleFeedbackReceived = async (feedback: string) => {
-    const question = questions[currentQuestionIndex];
-    try {
-      const response = await dispatch(checkAnswer({ question, answer: feedback })).unwrap();
-      dispatch(addFeedback(response));
-    } catch (error) {
-      console.error("Error in checkAnswer:", error);
-    }
+  const handleSubmitAnswer = async () => {
+    if (!answer.trim()) return
 
-    const isLastQuestion = currentQuestionIndex >= questions.length - 1;
-    if (isLastQuestion) {
-      dispatch(evaluateResponses());
+    const currentQuestion = questions[currentQuestionIndex]
+    const result = await dispatch(checkAnswer({ question: currentQuestion, answer })).unwrap()
+    dispatch(addFeedback(result))
+
+    if (currentQuestionIndex >= questions.length - 1) {
+      dispatch(evaluateResponses())
     } else {
-      dispatch(nextQuestion());
+      dispatch(nextQuestion())
     }
-  };
 
-  const toggleFeedback = (index: number) => {
-    setOpenFeedbackIndexes((prev) =>
-      prev.includes(index)
-        ? prev.filter((i) => i !== index)
-        : [...prev, index]
-    );
-  };
-
-  if (!interviewStarted) {
-    return (
-        
-      <div className="text-center text-gray-900 mt-20">
-        <h1 className="text-3xl font-bold mb-4">סימולציית ראיון עבודה</h1>
-        <p className="mb-6">כדי להתחיל את הראיון, לחצי על הכפתור הבא:</p>
-        <button
-          onClick={() => setInterviewStarted(true)}
-          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
-        >
-          🚀 התחל ראיון
-        </button>
-      </div>
-    );
+    setAnswer("")
   }
 
-  if (!questions || questions.length === 0) {
-    return <div className="text-gray-900 text-center mt-10">🔄 טוען שאלות... אנא המתיני</div>;
+  const startInterview = () => {
+    setInterviewStarted(true)
   }
 
   return (
-    <div className="text-black !text-black bg-white">
-    <div className="max-w-2xl mx-auto mt-24 text-gray-900 px-4">
-      <AnimatePresence mode="wait">
-        {!isInterviewFinished && currentQuestionIndex < questions.length ? (
-          <motion.div
-            key="question"
-            initial={{ opacity: 0, x: 100 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -100 }}
-            transition={{ duration: 0.4 }}
-          >
-            <Question
-              question={questions[currentQuestionIndex]}
-              onFeedbackReceived={handleFeedbackReceived}
-            />
-          </motion.div>
-        ) : (
-          <motion.div
-            key="summary"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -50 }}
-            transition={{ duration: 0.6 }}
-          >
-          <h1>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dolor molestiae eligendi molestias,
-             harum ducimus assumenda consequatur eaque corrupti odio amet culpa placeat
-            , fugiat pariatur dicta saepe sunt porro nemo mollitia.
-           Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dolor molestiae eligendi molestias,
-             harum ducimus assumenda consequatur eaque corrupti odio amet culpa placeat
-            , fugiat pariatur dicta saepe sunt porro nemo mollitia
-           Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dolor molestiae eligendi molestias,
-             harum ducimus assumenda consequatur eaque corrupti odio amet culpa placeat
-            , fugiat pariatur dicta saepe sunt porro nemo mollitia.
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nostrum, veritatis 
-            aliquam? Dignissimos quia, delectus quod animi magnam nobis suscipit ducimus possimus! Laboriosam e
-            a non, quo mollitia similique optio nesciunt possimus?</h1>
-              {/* Debugging: console.log("Average Score:", averageScore) */}
-            <h2 className="text-2xl font-bold mb-4">✨ המשוב הכללי</h2>
-            <div className="bg-gray-100 p-4 rounded-lg mb-6">
-              <p><strong>ציון ממוצע:</strong> {averageScore}</p>
-              {console.log("Average Score:", averageScore)}
-              <p><strong>סיכום:</strong> {summary}</p>
-            </div>
-
-            <h3 className="text-xl font-semibold mb-2">📝 משובים לשאלות:</h3>
-            <ul className="space-y-4">
-              {questions.map((q, index) => (
-                <li key={index} className="border p-4 rounded-lg bg-white text-gray-900 shadow">
-                  <p className="font-bold">שאלה {index + 1}: {q}</p>
-                  <button
-                    onClick={() => toggleFeedback(index)}
-                    className="mt-2 text-sm text-blue-600 underline"
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Grid container spacing={4}>
+        <Grid item xs={12} md={8}>
+          <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+            {!interviewStarted ? (
+              <Box textAlign="center" mt={8}>
+                <Typography variant="h4" color="primary" gutterBottom>
+                  סימולציית ראיון עבודה
+                </Typography>
+                <Typography variant="body1" paragraph>
+                  כדי להתחיל את הראיון, לחצי על הכפתור הבא:
+                </Typography>
+                <Button variant="contained" color="primary" onClick={startInterview}>
+                  🚀 התחל ראיון
+                </Button>
+              </Box>
+            ) : !isFinished ? (
+              <>
+                <Typography variant="h5" color="primary" gutterBottom>
+                  שאלה {currentQuestionIndex + 1}:
+                </Typography>
+                <Typography variant="body1" paragraph>
+                  {questions[currentQuestionIndex]}
+                </Typography>
+                <textarea
+                  rows={6}
+                  value={answer}
+                  onChange={(e) => setAnswer(e.target.value)}
+                  placeholder="כתבי את תשובתך כאן..."
+                  style={{ width: "100%", padding: 12, fontSize: "1rem", borderRadius: 8 }}
+                />
+                <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSubmitAnswer}
+                    disabled={!answer.trim()}
                   >
-                    {openFeedbackIndexes.includes(index) ? 'הסתר משוב' : 'הצג משוב'}
-                  </button>
-                  <AnimatePresence>
-                    {openFeedbackIndexes.includes(index) && feedbacks[index] && (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="mt-3 bg-gray-100 text-gray-900 p-3 rounded"
-                      >
-                        <p><strong>ציון:</strong> {feedbacks[index].score}</p>
-                        <p><strong>תשובה נכונה:</strong> {feedbacks[index].correct ? '✅ נכון' : '❌ לא נכון'}</p>
-                        <p><strong>תשובה שהייתה אמורה להינתן:</strong> {feedbacks[index].correct_answer}</p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-    </div>
-  );
-};
+                    שלחי תשובה
+                  </Button>
+                </Box>
+              </>
+            ) : (
+              <Typography variant="h5" color="primary">
+                הראיון הסתיים!
+              </Typography>
+            )}
+          </Paper>
+        </Grid>
 
-export default Interview;
+        <Grid item xs={12} md={4}>
+          <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+            {isFinished ? (
+            
+         
+              <InterviewFeedback
+                feedbacks={feedbacks}
+                averageScore={averageScore ?? 0}
+                summary={summary}
+                questions={questions}
+              />
+          
+            ) : (
+              <>
+                <Typography variant="h6" color="primary" gutterBottom>
+                  תשובות קודמות
+                </Typography>
+                {feedbacks.map((f, i) => (
+                  <Card key={i} sx={{ mb: 2 }}>
+                    <CardContent>
+                      <Typography variant="subtitle2" color="primary">
+                        שאלה {i + 1}
+                      </Typography>
+                      <Typography variant="body2" gutterBottom>
+                        {questions[i]}
+                      </Typography>
+                      <Divider sx={{ my: 1 }} />
+                      <Typography variant="subtitle2">משוב:</Typography>
+                      <Typography variant="body2">{f.feedback}</Typography>
+                      <Chip label={`ציון: ${f.score}%`} sx={{ mt: 1 }} color="success" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </>
+            )}
+          </Paper>
+        </Grid>
+      </Grid>
+    </Container>
+  )
+}
+
+export default Interview
