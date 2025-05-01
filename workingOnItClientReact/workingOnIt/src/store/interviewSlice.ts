@@ -42,9 +42,12 @@ export const evaluateResponses: any = createAsyncThunk(
 
         // const feedbackTexts = state; // ✅ חילוץ מחרוזות בלבד
         console.log("state.feedbacks:", state.feedbacks); // לבדיקה
-        const feedbackTexts = state.feedbacks.map(f => 
-            `Correct: ${f.correct}, Correct Answer: ${f.correct_answer}, Score: ${f.score}`
-          );
+        const feedbackTexts = state.feedbacks.map((f: any) => {
+            if (typeof f === 'object' && f !== null) {
+                return `Correct: ${f.correct}, Correct Answer: ${f.correct_answer}, Score: ${f.score}`;
+            }
+            return `Invalid feedback format`;
+        });
           
         console.log("sending to server:", feedbackTexts); // לבדיקה
 

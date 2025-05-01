@@ -92,7 +92,7 @@ if (Array.isArray(summary)) {
             {/* משוב על שאלות */}
             <div>
            
-                {questions.map((question, index) => {
+                {questions.map((question: string | number | React.ReactElement | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | React.ReactPortal | React.ReactElement | Iterable<React.ReactNode> | null | undefined> | null | undefined, index: number) => {
                     const feedback = feedbacks[index];  // משוב ספציפי לשאלה הנוכחית
                     return (
                         <div key={index} className="mb-4 border rounded-xl shadow-sm p-4">
