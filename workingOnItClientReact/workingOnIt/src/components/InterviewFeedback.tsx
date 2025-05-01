@@ -7,7 +7,7 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 const InterviewFeedback: React.FC = () => {
     const feedbacks = useSelector((state: any) => state.interview.feedbacks);
     const questions = useSelector((state: any) => state.interview.questions);
-    const averageScore = useSelector((state: any) => state.interview.averageScore);
+ 
     const summary = useSelector((state: any) => state.interview.summary);
 
     const [openIndexes, setOpenIndexes] = useState<number[]>([]);
