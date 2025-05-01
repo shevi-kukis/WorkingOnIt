@@ -1,77 +1,126 @@
-import React from "react"
-import { Typography, Box, CircularProgress, List, ListItem, ListItemIcon, ListItemText } from "@mui/material"
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { Box, Typography, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
-interface Feedback {
-  feedback: string;
-  score: number;
+const InterviewFeedback: React.FC = () => {
+    const feedbacks = useSelector((state: any) => state.interview.feedbacks);
+    const questions = useSelector((state: any) => state.interview.questions);
+    const averageScore = useSelector((state: any) => state.interview.averageScore);
+    const summary = useSelector((state: any) => state.interview.summary);
+
+    const [openIndexes, setOpenIndexes] = useState<number[]>([]);
+
+    const toggleFeedback = (index: number) => {
+        setOpenIndexes((prev) =>
+            prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+        );
+    };
+  
+    useEffect(() => {
+        console.log("Updated summary:", summary);
+      }, [summary]);
+const strengths: string[] = [];
+const toImprove: string[] = [];
+
+if (Array.isArray(summary)) {
+  summary.flat().forEach((item: string) => {
+    if (item.toLowerCase().startsWith("strengths:") || item.toLowerCase().startsWith("strong at:")) {
+      strengths.push(item.replace(/^.*?:\s*/, ""));
+    } else if (
+      item.toLowerCase().startsWith("areas for improvement:") ||
+      item.toLowerCase().startsWith("needs improvement:")
+    ) {
+      toImprove.push(item.replace(/^.*?:\s*/, ""));
+    }
+  });
 }
 
-interface Props {
-  feedbacks: Feedback[];
-  averageScore: number;
-  summary: string[][];
-  questions: string[];
-}
-
-const FinalMark = (results: Feedback[]) => {
-  return results.reduce((total, item) => total + item.score, 0)
-}
-
-const InterviewFeedback: React.FC<Props> = ({ feedbacks, averageScore, summary }) => {
-    const strengths = Array.isArray(summary?.[0]) ? summary[0] : [];
-    const toImprove = Array.isArray(summary?.[1]) ? summary[1] : [];
     
 
-  return (
-    <>
-      <Box textAlign="center" mb={3}>
-        <CircularProgress
-          variant="determinate"
-          value={averageScore ?? 0}
-          size={100}
-          thickness={5}
-          color="primary"
-        />
-        <Typography variant="h5" color="primary" mt={2}>
-          ציון : {FinalMark(feedbacks)}% מתוך 100%
-        </Typography>
-      </Box>
+    const FinalMark = (feedbacks: any[]) => {
+        return feedbacks.reduce((total, item) => total + item.score, 0);
+      
+    };
 
-      <Typography variant="h6" gutterBottom color="primary">
-        סיכום
-      </Typography>
+    return (
+        
+        <div className="p-4 max-w-3xl mx-auto">
+            <h2 className="text-2xl font-semibold mb-4 text-center">סיום הראיון</h2>
 
-      <Typography variant="subtitle1" color="secondary">
-        חוזקות:
-      </Typography>
-      <List dense>
-        {strengths.map((point, index) => (
-          <ListItem key={`strength-${index}`}>
-            <ListItemIcon>
-              <CheckCircleIcon color="success" />
-            </ListItemIcon>
-            <ListItemText primary={point} />
-          </ListItem>
-        ))}
-      </List>
+            {/* ציון ומסכם כללי */}
+            <Box textAlign="center" mb={3}>
+                <Typography variant="h5" color="primary" mt={2}>
+                    ציון : {FinalMark(feedbacks)}% מתוך 100%
+                </Typography>
+     
+            </Box>
 
-      <Typography variant="subtitle1" color="error">
-        נקודות לשיפור:
-      </Typography>
-      <List dense>
-        {toImprove.map((point, index) => (
-          <ListItem key={`improve-${index}`}>
-            <ListItemIcon>
-              <ErrorOutlineIcon color="error" />
-            </ListItemIcon>
-            <ListItemText primary={point} />
-          </ListItem>
-        ))}
-      </List>
-    </>
-  )
-}
+           
+
+            {/* חוזקות */}
+            <Typography variant="subtitle1" color="secondary" gutterBottom>
+                חוזקות:
+            </Typography>
+            <List dense>
+                {strengths.map((point, index) => (
+                    <ListItem key={`strength-${index}`}>
+                        <ListItemIcon>
+                            <CheckCircleIcon color="success" />
+                        </ListItemIcon>
+                        <ListItemText primary={point} />
+                    </ListItem>
+                ))}
+            </List>
+
+            {/* נקודות לשיפור */}
+            <Typography variant="subtitle1" color="error">
+                נקודות לשיפור:
+            </Typography>
+            <List dense>
+                {toImprove.map((point, index) => (
+                    <ListItem key={`improve-${index}`}>
+                        <ListItemIcon>
+                            <ErrorOutlineIcon color="error" />
+                        </ListItemIcon>
+                        <ListItemText primary={point} />
+                    </ListItem>
+                ))}
+            </List>
+
+            {/* משוב על שאלות */}
+            <div>
+           
+                {questions.map((question, index) => {
+                    const feedback = feedbacks[index];  // משוב ספציפי לשאלה הנוכחית
+                    return (
+                        <div key={index} className="mb-4 border rounded-xl shadow-sm p-4">
+                            <div className="flex justify-between items-center">
+                                <p className="font-medium">{question}</p>
+                                <button
+                                    className="text-blue-600 hover:underline"
+                                    onClick={() => toggleFeedback(index)}
+                                >
+                                    {openIndexes.includes(index) ? 'הסתר משוב' : 'הצג משוב'}
+                                </button>
+                            </div>
+                            {openIndexes.includes(index) && feedback && (
+                                <div className="mt-3 bg-gray-50 p-3 rounded-lg border text-sm">
+                                    <p><strong>תשובתך:</strong> {feedback.userAnswer}</p>
+                                    <p><strong>משוב:</strong> {feedback.correct ? 'נכון' : 'לא נכון'}</p>
+                                    <p><strong>ציון:</strong> {feedback.score}</p>
+                                    {!feedback.correct && feedback.correct_answer && (
+                                        <p><strong>תשובה נכונה:</strong> {feedback.correct_answer}</p>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+};
 
 export default InterviewFeedback;

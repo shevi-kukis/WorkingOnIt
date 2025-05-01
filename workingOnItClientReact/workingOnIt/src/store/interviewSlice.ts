@@ -1,16 +1,17 @@
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+
 import { interviewState } from '../models/interview';
+import axiosInstance from '../components/axiosInstance';
 
 
-const API_PYTHON_BASE_URL = 'http://localhost:5000';
+
 
 export const uploadResume: any = createAsyncThunk(
     'interview/uploadResume',
     async (filePath: string, { rejectWithValue }) => {
         try {
-            const response = await axios.post(`${API_PYTHON_BASE_URL}/upload_resume`, { filePath });
+            const response = await axiosInstance.post(`/Resume/analyze`, { filePath });
             return response.data.questions;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || 'Error uploading resume');
@@ -21,31 +22,47 @@ export const uploadResume: any = createAsyncThunk(
 export const checkAnswer: any = createAsyncThunk(
     'interview/checkAnswer',
     async ({ question, answer }: { question: string; answer: string }) => {
-        const response = await axios.post(`${API_PYTHON_BASE_URL}/check_answer`, {
+        const response = await axiosInstance.post(`/InterviewQuestions/check`, {
             question,
             answer,
         });
-        return response.data.feedback;
+
+        return {
+            ...response.data.feedback,
+            userAnswer: answer  // ✅ נשמור את תשובת המשתמש
+        };
     }
 );
+
 
 export const evaluateResponses: any = createAsyncThunk(
     'interview/evaluateResponses',
     async (_, { getState }) => {
         const state: interviewState = (getState() as { interview: interviewState }).interview;
-        const response = await axios.post(`${API_PYTHON_BASE_URL}/evaluate_responses`, {
-            feedback_list: state.feedbacks,
+
+        // const feedbackTexts = state; // ✅ חילוץ מחרוזות בלבד
+        console.log("state.feedbacks:", state.feedbacks); // לבדיקה
+        const feedbackTexts = state.feedbacks.map(f => 
+            `Correct: ${f.correct}, Correct Answer: ${f.correct_answer}, Score: ${f.score}`
+          );
+          
+        console.log("sending to server:", feedbackTexts); // לבדיקה
+
+        const response = await axiosInstance.post(`/InterviewQuestions/evaluate`, {
+            feedback_list: feedbackTexts,
         });
+     console.log("response from server:", response.data); // לבדיקה
         return response.data;
     }
 );
+
 
 export const initialState: interviewState = {
     questions: [],
     currentQuestionIndex: 0,
     feedbacks: [],
-    averageScore: null,
-    summary: '',
+
+    summary: [[]],
     status: 'idle',
     error: null,
     isInterviewFinished: false, // ✅ משתנה חדש לזיהוי סוף הראיון
@@ -56,6 +73,7 @@ const interviewSlice = createSlice({
     initialState,
     reducers: {
         resetInterview: (state) => {
+         
             state.questions = [];
             state.currentQuestionIndex = 0;
             state.feedbacks = [];
@@ -82,11 +100,19 @@ const interviewSlice = createSlice({
                 state.feedbacks.push(action.payload);
             })
      
-                    .addCase(evaluateResponses.fulfilled, (state, action) => {
-                        state.averageScore = action.payload.averageScore;
-                        state.summary = action.payload.summary;
-                        state.isInterviewFinished = true; // סימון שהראיון הסתיים
-                    });
+            .addCase(evaluateResponses.fulfilled, (state, action) => {
+              
+                const summary = action.payload.summary;
+                if (Array.isArray(summary)) {
+                    state.summary = Array.isArray(summary) ? summary : [[]];
+                } else {
+                    state.summary = [[]];
+                }
+                
+            
+                state.isInterviewFinished = true;
+            });
+            
             }
             
 });

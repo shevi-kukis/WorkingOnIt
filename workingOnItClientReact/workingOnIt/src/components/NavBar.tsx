@@ -1,7 +1,5 @@
 "use client"
-
 import type React from "react"
-
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import {
@@ -57,13 +55,11 @@ const NavBar = () => {
     handleClose()
     navigate("/login")
   }
-
   const handleNavigation = (path: string) => {
     navigate(path)
     handleMobileMenuClose()
     handleClose()
   }
-
   return (
     <AppBar position="static" color="default" elevation={1} sx={{ backgroundColor: "white" }}>
       <Container maxWidth="lg">
@@ -111,6 +107,9 @@ const NavBar = () => {
                        <MenuItem key="interview" onClick={() => handleNavigation("/interview")}>
                        Interview
                      </MenuItem>,
+                       <MenuItem key="chart" onClick={() => handleNavigation("/chart")}>
+                       Chart
+                     </MenuItem>,
                       <MenuItem key="profile" onClick={() => handleNavigation("/edit-profile")}>
                         Profile
                       </MenuItem>,
@@ -133,6 +132,9 @@ const NavBar = () => {
               <Button color="inherit" onClick={() => navigate("/")}>
                 Home
               </Button>
+              <MenuItem key="chart" onClick={() => handleNavigation("/chart")}>
+                       Chart
+                     </MenuItem>,
               <Button color="inherit" onClick={() => navigate("/interview-tips")}>
                 Interview Tips
               </Button>

@@ -25,7 +25,7 @@ import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile"
 import { useAuth } from "./AuthContext"
 
 const DownLoadResume = () => {
-  const { user } = useAuth()
+  const { state } = useAuth()
   const theme = useTheme()
 
   const [loading, setLoading] = useState(false)
@@ -52,7 +52,7 @@ const DownLoadResume = () => {
         // Create a fake download link
         const link = document.createElement("a")
         link.href = "#"
-        link.download = `resume_${user?.firstName}_${user?.lastName}${
+        link.download = `resume_${state.user?.fullName}${
           resumeFormats.find((f) => f.id === format)?.extension || ""
         }`
         document.body.appendChild(link)

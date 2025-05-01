@@ -54,8 +54,8 @@ def evaluate_responses():
         if not feedback_list:
             return jsonify({"error": "Feedback list must be provided"}), 400
 
-        average_score, summary = evaluate_feedback(feedback_list)
-        return jsonify({"average_score": average_score, "summary": summary}), 200
+        summary = evaluate_feedback(feedback_list)
+        return jsonify(summary), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

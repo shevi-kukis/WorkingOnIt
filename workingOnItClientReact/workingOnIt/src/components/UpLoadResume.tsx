@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react";
 import {
   Container,
   Typography,
@@ -7,60 +7,57 @@ import {
   Box,
   Paper,
   Stack,
-} from "@mui/material"
-import CloudUploadIcon from "@mui/icons-material/CloudUpload"
-import DownloadIcon from "@mui/icons-material/Download"
-import { useAuth } from "./AuthContext"
-import axiosInstance from "./axiosInstance"
-
-
+} from "@mui/material";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import DownloadIcon from "@mui/icons-material/Download";
+import { useAuth } from "./AuthContext";
+import axiosInstance from "./axiosInstance";
 
 const UploadResume = () => {
-  const [file, setFile] = useState<File | null>(null)
-  const [error, setError] = useState("")
-  const [loading, setLoading] = useState(false)
-
-  const { state, dispatch } = useAuth()
-  const existingResume = state.resume?.filePath
+  const [file, setFile] = useState<File | null>(null);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { state, dispatch } = useAuth();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0] || null
-    setFile(selectedFile)
-    setError("")
-  }
+    const selectedFile = e.target.files?.[0] || null;
+    setFile(selectedFile);
+    setError("");
+  };
 
   const handleUpload = async () => {
-    if (!file) return
-    setLoading(true)
-    setError("")
+    if (!file) return;
+    setLoading(true);
+    setError("");
 
-    const formData = new FormData()
-    formData.append("file", file)
+    const formData = new FormData();
+    formData.append("file", file);
 
     try {
       const response = await axiosInstance.post("/resume/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
-      })
-      console.log("Uploaded resume:", response.data);
-      const result = response.data
-      // if (result.success) {
-      //   dispatch({ type: "UPDATE_RESUME", payload: result.data })
-      //   setFile(null)
-      // } else {
-      //   setError("Upload failed. Please try again1.")
-      // }
+      });
 
+      const resumeData = response.data;
+      dispatch({ type: "UPDATE_RESUME", payload: resumeData }); // ✅ עדכון סטייט
+       // שלב 2: לקרוא ל-login מחדש
+   
+
+
+      
+      setFile(null);
     } catch (err) {
-      setError("Upload failed. Please try again2.")
+      console.error("Upload failed", err);
+      setError("Upload failed. Please try again.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleDownload = () => {
-    if (!existingResume) return
-    window.open(existingResume, "_blank")
-  }
+    if (!state.resume?.filePath) return;
+    window.open(state.resume.filePath, "_blank");
+  };
 
   return (
     <Container maxWidth="sm" sx={{ mt: 6 }}>
@@ -100,7 +97,7 @@ const UploadResume = () => {
               {loading ? "Uploading..." : "Upload"}
             </Button>
 
-            {existingResume && (
+            {state.resume?.filePath && (
               <Button
                 variant="outlined"
                 color="secondary"
@@ -111,14 +108,13 @@ const UploadResume = () => {
               </Button>
             )}
           </Stack>
-     
 
-          {state.resume && (
+          {state.resume?.fileName && (
             <Alert severity="success" sx={{ mt: 3 }}>
               Resume uploaded successfully!
             </Alert>
-
           )}
+
           {error && (
             <Alert severity="error" sx={{ mt: 3 }}>
               {error}
@@ -126,12 +122,8 @@ const UploadResume = () => {
           )}
         </Box>
       </Paper>
-
-      {/* <UpdateResume /> */}
     </Container>
-  )
-}
+  );
+};
 
-export default UploadResume
-
-
+export default UploadResume;

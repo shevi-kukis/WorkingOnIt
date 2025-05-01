@@ -3,6 +3,7 @@ using WorkingOnIt.Core.Dtos;
 using WorkingOnIt.Core.InterfaceService;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using WorkingOnIt.Core.Entities;
 
 namespace WorkingOnIt.Api.Controllers
 {
@@ -61,5 +62,32 @@ namespace WorkingOnIt.Api.Controllers
                 return NotFound();
             return Ok(true);
         }
+        [HttpPost("submit")]
+        public async Task<IActionResult> SubmitInterview([FromBody] InterviewDto dto)
+        {
+            var interview = new InterviewDto
+            {
+                UserId = dto.UserId,
+                Score = dto.Score
+            };
+
+            await _service.AddAsync(interview);
+            return Ok(interview);
+        }
+        [HttpGet("scores/{userId}")]
+        public async Task<IActionResult> GetUserScores(int userId)
+        {
+            var interviews = await _service.GetUserInterviewsAsync(userId);
+
+            var result = interviews
+                .OrderBy(i => i.InterviewDate)
+                .Select(i => new {
+                    date = i.InterviewDate.ToString("yyyy-MM-dd"),
+                    score = i.Score
+                });
+
+            return Ok(result);
+        }
+
     }
 }

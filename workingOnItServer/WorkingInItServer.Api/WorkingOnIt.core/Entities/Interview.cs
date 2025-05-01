@@ -11,7 +11,7 @@ namespace WorkingOnIt.Core.Entities
     {
         [Key]
         public int Id { get; set; }
-        public DateTime InterviewDate { get; set; }
+        public DateTime InterviewDate { get; set; } = DateTime.UtcNow;
 
         // קשרים
         public int UserId { get; set; }
@@ -20,8 +20,8 @@ namespace WorkingOnIt.Core.Entities
         //public int ResumeId { get; set; }
         //public Resume Resume { get; set; }
 
-        public List<InterviewQuestion> Questions { get; set; } 
-        public int? Score { get; set; } // ציון אופציונלי
+        //public List<InterviewQuestion> Questions { get; set; } 
+        public int  Score { get; set; } // ציון אופציונלי
     }
 
 }

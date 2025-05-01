@@ -14,7 +14,8 @@ import UpLoadResume from "./components/UpLoadResume"
 import { useAuth } from "./components/AuthContext"
 import type { JSX } from "react/jsx-runtime"
 import DownLaodResume from "./components/DownLaodResume"
-import InterviewFeedback from "./components/InterviewFeedback"
+
+import InterviewScoresChart from "./components/InterviewScoresChart "
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
@@ -99,7 +100,16 @@ const Router = () => {
             </ProtectedRoute>
           }
         />
-        
+         <Route
+          path="/chart"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+           <InterviewScoresChart/>
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   )

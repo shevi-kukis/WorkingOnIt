@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,5 +15,14 @@ namespace WorkingOnIt.Data.Repository
         {
 
         }
+        public async Task<List<Interview>> GetByUserIdAsync(int userId)
+        {
+            return await _dbSet
+                .Where(i => i.UserId == userId)
+                .OrderBy(i => i.InterviewDate)
+                .ToListAsync();
+        }
+
+
     }
 }

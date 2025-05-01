@@ -48,5 +48,9 @@ namespace WorkingOnIt.Service.Services
                 await _iManager.SaveAsync();
             return isDeleted;
         }
+        public async Task<List<Interview>> GetUserInterviewsAsync(int userId)
+        {
+            return await _iManager.interviewRepository.GetByUserIdAsync(userId);
+        }
     }
 }

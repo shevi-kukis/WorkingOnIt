@@ -85,11 +85,11 @@ def extract_score(feedback):
     return 0
 
 def evaluate_feedback(feedback_list):
-    total_score = sum(extract_score(fb) for fb in feedback_list)
-    average_score = total_score / len(feedback_list) if feedback_list else 0
+    # total_score = sum(extract_score(fb) for fb in feedback_list)
+    # average_score = total_score / len(feedback_list) if feedback_list else 0
 
     summary_prompt = f" בהתבסס על המשובים הבאים: {feedback_list},תחזיר את התשובה במערך בגודל 2 של מערכים של מחרוזות , המערך הראשוןן יהיה מערך של הדברים שהמשתמש טוב בהם והמערך השני דברים שהמשתמש צריך ללמוד עוד תפרט קצת המחרוזת הרשונה תהיה במה הוא טוב  תפרט במה המשתמש טוב ובמה כדי לו להשתפר מהם נקודות החוזקה והחולשה של הנבחן? - תענה על התשובה בצורה מסודרת ומעוצבת"
-    contents = [types.Content(role="user", parts=[types.Part(text=summary_prompt)])]
+    # contents = [types.Content(role="user", parts=[types.Part(text=summary_prompt)])]
 
     config = types.GenerateContentConfig(
         temperature=1,
@@ -100,7 +100,7 @@ def evaluate_feedback(feedback_list):
     )
 
     summary_text = ""
-    for chunk in client.models.generate_content_stream(model=model, contents=contents, config=config):
+    for chunk in client.models.generate_content_stream(model=model, contents=summary_prompt, config=config):
         summary_text += chunk.text
 
-    return average_score, summary_text
+    return  summary_text

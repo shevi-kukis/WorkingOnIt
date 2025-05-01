@@ -85,7 +85,8 @@ public class S3Service : IS3Service
             BucketName = _bucketName,
             Key = fileName,
             Verb = HttpVerb.GET,
-            Expires = DateTime.UtcNow.AddMinutes(30) // תוקף של 30 דקות
+            Expires = DateTime.UtcNow.AddDays(7) // תוקף של 7 ימים
+
         };
 
         return _s3Client.GetPreSignedURL(request);

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Amazon.Runtime;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Recipes.Service.Services;
 using System.Collections.Generic;
@@ -6,16 +7,17 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using WorkingOnIt.Core.Dtos;
 using WorkingOnIt.Core.InterfaceService;
+using WorkingOnIt.Core.ModalsDto;
 using WorkingOnIt.Service.Services;
 
 namespace WorkingInIt.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ResumeController(IResumeService service) : ControllerBase
+    public class ResumeController(IResumeService service, IHttpClientFactory httpClientFactory) : ControllerBase
     {
         private readonly IResumeService _service = service;
-
+        private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
         // GET: api/Resume
         [Authorize(Policy = "UserOrAdmin")]
         [HttpGet]
@@ -117,6 +119,42 @@ namespace WorkingInIt.Api.Controllers
             }
         }
 
+        [HttpPost("analyze")]
+        public async Task<IActionResult> AnalyzeResume([FromBody] ResumeAnalysisRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.FilePath))
+            {
+                return BadRequest("File path must be provided.");
+            }
+
+            var client = _httpClientFactory.CreateClient();
+
+            var payload = new
+            {
+                filePath = request.FilePath
+            };
+
+            var pythonApiUrl = $"{Environment.GetEnvironmentVariable("PYTHON_API")}/upload_resume";
+
+
+            try
+            {
+                var response = await client.PostAsJsonAsync(pythonApiUrl, payload);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    return StatusCode((int)response.StatusCode, $"Python server error: {error}");
+                }
+
+                var result = await response.Content.ReadAsStringAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error communicating with Python server: {ex.Message}");
+            }
+        }
 
 
 

@@ -11,7 +11,8 @@ namespace WorkingOnIt.Core.Dtos
     public class InterviewDto
     {
         public int Id { get; set; }
-        public DateTime InterviewDate { get; set; }
+        public DateTime InterviewDate { get; set; } = DateTime.UtcNow;
+
 
         // קשרים
         public int UserId { get; set; }
@@ -20,6 +21,6 @@ namespace WorkingOnIt.Core.Dtos
         //public Resume Resume { get; set; }
 
    
-        public int? Score { get; set; } // ציון אופציונלי
+        public int  Score { get; set; } // ציון אופציונלי
     }
 }

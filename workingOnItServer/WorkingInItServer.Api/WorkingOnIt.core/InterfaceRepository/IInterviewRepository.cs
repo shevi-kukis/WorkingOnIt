@@ -9,5 +9,6 @@ namespace WorkingOnIt.Core.InterfaceRepository
 {
     public interface IInterviewRepository:IRepositoryGeneric<Interview>
     {
+        public  Task<List<Interview>> GetByUserIdAsync(int userId);
     }
 }

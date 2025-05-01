@@ -2,8 +2,8 @@ export interface interviewState {
     questions: string[];
     currentQuestionIndex: number;
     feedbacks: string[];
-    averageScore: number | null;
-    summary: string;
+    summary: string[][];
+  
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     error: string | null;
     isInterviewFinished: boolean;
