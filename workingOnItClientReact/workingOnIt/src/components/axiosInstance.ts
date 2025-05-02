@@ -1,8 +1,8 @@
-
 import axios from "axios";
-
+const rawBaseUrl = process.env.REACT_APP_API_BASE_URL || "";
 const axiosInstance = axios.create({
-  baseURL: "https://localhost:32769/api",
+
+     baseURL: `${rawBaseUrl.replace(/\/+$/, "")}/api`,
 });
 
 axiosInstance.interceptors.request.use((config) => {
