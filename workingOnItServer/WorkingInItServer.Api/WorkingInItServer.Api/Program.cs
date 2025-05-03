@@ -72,7 +72,7 @@ internal class Program
             options.AddPolicy("AllowFrontend", policy =>
             {
                 policy.WithOrigins(
-                     "http://localhost:5173",
+                     "https://localhost:5173",
                    
                     "https://workingonit.onrender.com"
                  
@@ -130,8 +130,6 @@ internal class Program
         }
 
         app.UseHttpsRedirection();
-
-        app.UseAuthorization();
 
         app.MapControllers();
 
