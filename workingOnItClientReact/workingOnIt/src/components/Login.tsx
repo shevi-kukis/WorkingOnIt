@@ -52,6 +52,8 @@ const Login = () => {
 
     try {
       const response = await axiosInstance.post("/Auth/login", { email: formData.email, password: formData.password });
+      console.log("response.data", response.data);
+
       dispatch({
         type: "LOGIN",
         payload: {
