@@ -57,7 +57,7 @@ const Home = () => {
                     fontSize: { xs: "2.5rem", md: "3.5rem" },
                   }}
                 >
-                  Prepare for your next interview!!!
+                  Prepare for your next interview
                 </Typography>
                 <Typography variant="h5" color="text.secondary" paragraph sx={{ mb: 4 }}>
                   Practice with our AI-powered interview simulator and get feedback to improve your skills.

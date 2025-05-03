@@ -62,20 +62,27 @@ internal class Program
         builder.Services.AddDbContext<DataContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
     mysqlOptions => mysqlOptions.CommandTimeout(60)));
-      //  builder.Services.AddDbContext<DataContext>(options =>
-      //options.UseMySql("Server=bhlraqx5nvyxmpm5cicv-mysql.services.clever-cloud.com;Database=bhlraqx5nvyxmpm5cicv;User=ua67fticoup8ufvo;Password=eB0GEfKtrMmgTdEjQExt; Integrated Security = true;TrustServerCertificate=True; ",
-      //  new MySqlServerVersion(new Version(8, 0, 0))));
-      //  builder.Services.AddDbContext<DataContext>(
-      //options => options.UseSqlServer("Data Source = DESKTOP-SSNMLFD; Initial Catalog = WorkingOnIt; Integrated Security = true;TrustServerCertificate=True; "));
+        //  builder.Services.AddDbContext<DataContext>(options =>
+        //options.UseMySql("Server=bhlraqx5nvyxmpm5cicv-mysql.services.clever-cloud.com;Database=bhlraqx5nvyxmpm5cicv;User=ua67fticoup8ufvo;Password=eB0GEfKtrMmgTdEjQExt; Integrated Security = true;TrustServerCertificate=True; ",
+        //  new MySqlServerVersion(new Version(8, 0, 0))));
+        //  builder.Services.AddDbContext<DataContext>(
+        //options => options.UseSqlServer("Data Source = DESKTOP-SSNMLFD; Initial Catalog = WorkingOnIt; Integrated Security = true;TrustServerCertificate=True; "));
         builder.Services.AddCors(options =>
         {
-            options.AddPolicy("AllowAnyOrigin", builder =>
+            options.AddPolicy("AllowFrontend", policy =>
             {
-                builder.AllowAnyOrigin()  // מאפשר גישה מכל מקור
-                       .AllowAnyMethod()  // מאפשר כל סוג בקשה (GET, POST, וכו')
-                       .AllowAnyHeader(); // מאפשר כל כותרת בבקשה
+                policy.WithOrigins(
+                     "http://localhost:5173",
+                   
+                    "https://workingonit.onrender.com"
+                 
+                 )
+                      .AllowAnyMethod()
+                      .AllowAnyHeader()
+                      .AllowCredentials();
             });
         });
+
         //jwt extensions
         builder.Services.AddAuthorization(options =>
         {
@@ -103,7 +110,8 @@ internal class Program
         });
 
         var app = builder.Build();
-        app.UseCors("AllowAnyOrigin"); // החלת ה-CORS
+        app.UseCors("AllowFrontend");
+
         app.UseAuthentication(); // להוסיף לפני `app.UseAuthorization();`
         app.UseAuthorization();
 
