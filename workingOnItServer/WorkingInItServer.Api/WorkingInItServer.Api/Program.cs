@@ -4,15 +4,15 @@ using WorkingOnIt.Core.InterfaceRepository;
 using WorkingOnIt.Core.InterfaceService;
 using WorkingOnIt.Data;
 using WorkingOnIt.Data.Repository;
-using WorkingOnIt.Service.Services;
-using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Recipes.Service.Services;
-using DotNetEnv;
 using dotenv.net;
-using dotenv.net;
+using WorkingOnIt.Service.Services;
+
+
+
+
 
 internal class Program
 {

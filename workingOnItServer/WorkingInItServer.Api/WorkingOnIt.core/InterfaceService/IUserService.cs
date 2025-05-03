@@ -8,7 +8,7 @@ using WorkingOnIt.Core.Dtos;
 using WorkingOnIt.Core.Entities;
 using WorkingOnIt.Core.ModalsDto;
 using Microsoft.AspNetCore.Http;
-using Recipes.Service.Services;
+using WorkingOnIt.Core.InterfaceService;
 namespace WorkingOnIt.Core.InterfaceService
 {
     public interface IUserService

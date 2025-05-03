@@ -27,6 +27,7 @@
     <ProjectReference Include="..\WorkingOnIt.core\WorkingOnIt.Core.csproj" />
     <ProjectReference Include="..\WorkingOnIt.Data\WorkingOnIt.Data.csproj" />
     <ProjectReference Include="..\WorkingOnItService\WorkingOnIt.Service.csproj" />
+ 
 
   </ItemGroup>
 

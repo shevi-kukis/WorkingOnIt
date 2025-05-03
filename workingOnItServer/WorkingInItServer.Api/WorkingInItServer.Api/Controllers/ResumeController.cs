@@ -1,14 +1,14 @@
 ﻿using Amazon.Runtime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Recipes.Service.Services;
+
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using WorkingOnIt.Core.Dtos;
 using WorkingOnIt.Core.InterfaceService;
 using WorkingOnIt.Core.ModalsDto;
-using WorkingOnIt.Service.Services;
+
 
 namespace WorkingInIt.Api.Controllers
 {

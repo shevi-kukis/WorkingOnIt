@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Recipes.Service.Services;
+using WorkingOnIt.Core.InterfaceService;
+
 
 public class S3Service : IS3Service
 {

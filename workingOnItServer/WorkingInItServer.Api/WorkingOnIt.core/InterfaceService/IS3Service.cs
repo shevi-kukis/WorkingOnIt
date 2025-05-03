@@ -11,14 +11,10 @@ using System.Threading.Tasks;
 
 
 
-    namespace Recipes.Service.Services
-    {
+namespace WorkingOnIt.Core.InterfaceService
+{
         public interface IS3Service
         {
-
-
-
-
 
         // 🟢 יצירת URL חתום להעלאת קובץ
         public Task<string> GeneratePresignedUploadUrlAsync(string fileName, string contentType);
