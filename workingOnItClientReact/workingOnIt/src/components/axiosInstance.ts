@@ -3,6 +3,7 @@ const rawBaseUrl = process.env.REACT_APP_API_BASE_URL || "";
 const axiosInstance = axios.create({
 
      baseURL: `${rawBaseUrl.replace(/\/+$/, "")}/api`,
+     withCredentials: true,
 });
 
 axiosInstance.interceptors.request.use((config) => {
