@@ -4,8 +4,9 @@ import base64
 import re
 from dotenv import load_dotenv
 # from google import genai
-from google.genai import types
+from google.generativeai import types
 import google.generativeai as genai
+
 
 load_dotenv()
 gemini_api_key = os.getenv('GEMINI_API_KEY')
