@@ -91,11 +91,7 @@ internal class Program
             options.AddPolicy("UserOrAdmin", policy => policy.RequireRole("User", "Admin"));
             options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
         });
-<<<<<<< HEAD
-    
-=======
-   
->>>>>>> 0f0d1e0 (render3)
+
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
