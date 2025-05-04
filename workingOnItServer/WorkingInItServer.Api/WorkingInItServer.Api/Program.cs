@@ -46,7 +46,8 @@ internal class Program
         builder.Services.AddScoped<IResumeRepository, ResumeRepository>();
 
 
-        builder.Services.AddControllers()
+        builder.Services.AddControllers()   
+          
     .AddJsonOptions(x =>
         x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles);
 
@@ -72,7 +73,7 @@ internal class Program
             options.AddPolicy("AllowFrontend", policy =>
             {
                 policy.WithOrigins(
-                     "https://localhost:5173",
+                     "http://localhost:5173",
                    
                     "https://workingonit.onrender.com"
                  
@@ -90,7 +91,11 @@ internal class Program
             options.AddPolicy("UserOrAdmin", policy => policy.RequireRole("User", "Admin"));
             options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
         });
+<<<<<<< HEAD
     
+=======
+   
+>>>>>>> 0f0d1e0 (render3)
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
