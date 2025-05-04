@@ -3,15 +3,14 @@ import json
 import base64
 import re
 from dotenv import load_dotenv
-# from google import genai
-from google.generativeai import types
-import google.generativeai as genai
-
+import google.generativeai as genai  # מתקן את ה-import של google.generativeai
 
 load_dotenv()
 gemini_api_key = os.getenv('GEMINI_API_KEY')
 
-client = genai.Client(api_key=gemini_api_key)
+# היצירה של ה-client צריכה להיות עם api_key ישירות
+genai.configure(api_key=gemini_api_key)  # Configure the client with your API key
+
 model = "gemini-2.0-flash"
 
 def encode_file_to_base64(file_path):
@@ -24,16 +23,16 @@ def analyze_resume(resume_file_path):
     נתח את הקובץ וספק רשימה של 4 שאלות בפורמט: { "questions": ["שאלה 1", ...] }"""
 
     contents = [
-        types.Content(
+        genai.Content(
             role="user",
             parts=[
-                types.Part(text=prompt),
-                types.Part(inline_data=types.Blob(mime_type="application/pdf", data=base64.b64decode(encoded_resume))),
+                genai.Part(text=prompt),
+                genai.Part(inline_data=genai.Blob(mime_type="application/pdf", data=base64.b64decode(encoded_resume))),
             ],
         ),
     ]
 
-    config = types.GenerateContentConfig(
+    config = genai.GenerateContentConfig(
         temperature=1,
         top_p=0.95,
         top_k=40,
@@ -42,7 +41,7 @@ def analyze_resume(resume_file_path):
     )
 
     response_text = ""
-    for chunk in client.models.generate_content_stream(model=model, contents=contents, config=config):
+    for chunk in genai.generate_content_stream(model=model, contents=contents, config=config):
         response_text += chunk.text
 
     try:
@@ -60,8 +59,8 @@ def check_answer_with_gamini(question, answer):
     החזר JSON: {{"correct": true/false, "score": 0-10, "correct_answer": "..." }}
     """
 
-    contents = [types.Content(role="user", parts=[types.Part(text=prompt)])]
-    config = types.GenerateContentConfig(
+    contents = [genai.Content(role="user", parts=[genai.Part(text=prompt)])]
+    config = genai.GenerateContentConfig(
         temperature=1,
         top_p=0.95,
         top_k=40,
@@ -70,7 +69,7 @@ def check_answer_with_gamini(question, answer):
     )
 
     response_text = ""
-    for chunk in client.models.generate_content_stream(model=model, contents=contents, config=config):
+    for chunk in genai.generate_content_stream(model=model, contents=contents, config=config):
         response_text += chunk.text
 
     try:
@@ -87,13 +86,9 @@ def extract_score(feedback):
     return 0
 
 def evaluate_feedback(feedback_list):
-    # total_score = sum(extract_score(fb) for fb in feedback_list)
-    # average_score = total_score / len(feedback_list) if feedback_list else 0
-
-    summary_prompt = f" בהתבסס על המשובים הבאים: {feedback_list},תחזיר את התשובה במערך בגודל 2 של מערכים של מחרוזות , המערך הראשוןן יהיה מערך של הדברים שהמשתמש טוב בהם והמערך השני דברים שהמשתמש צריך ללמוד עוד תפרט קצת המחרוזת הרשונה תהיה במה הוא טוב  תפרט במה המשתמש טוב ובמה כדי לו להשתפר מהם נקודות החוזקה והחולשה של הנבחן? - תענה על התשובה בצורה מסודרת ומעוצבת"
-    # contents = [types.Content(role="user", parts=[types.Part(text=summary_prompt)])]
-
-    config = types.GenerateContentConfig(
+    summary_prompt = f" בהתבסס על המשובים הבאים: {feedback_list}, תחזיר את התשובה במערך בגודל 2 של מערכים של מחרוזות , המערך הראשוןן יהיה מערך של הדברים שהמשתמש טוב בהם והמערך השני דברים שהמשתמש צריך ללמוד עוד תפרט קצת המחרוזת הרשונה תהיה במה הוא טוב תפרט במה המשתמש טוב ובמה כדי לו להשתפר מהם נקודות החוזקה והחולשה של הנבחן? - תענה על התשובה בצורה מסודרת ומעוצבת"
+    
+    config = genai.GenerateContentConfig(
         temperature=1,
         top_p=0.95,
         top_k=40,
@@ -102,7 +97,7 @@ def evaluate_feedback(feedback_list):
     )
 
     summary_text = ""
-    for chunk in client.models.generate_content_stream(model=model, contents=summary_prompt, config=config):
+    for chunk in genai.generate_content_stream(model=model, contents=summary_prompt, config=config):
         summary_text += chunk.text
 
-    return  summary_text
+    return summary_text
