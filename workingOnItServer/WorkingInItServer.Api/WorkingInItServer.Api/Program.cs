@@ -74,7 +74,7 @@ internal class Program
             {
                 policy.WithOrigins(
                      "http://localhost:5173",
-                   
+                       "https://localhost:5173",
                     "https://workingonit.onrender.com"
                  
                  )
@@ -91,7 +91,11 @@ internal class Program
             options.AddPolicy("UserOrAdmin", policy => policy.RequireRole("User", "Admin"));
             options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
         });
+<<<<<<< HEAD
 
+=======
+   
+>>>>>>> a09c8ba (requierments.tsx)
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();

@@ -8,7 +8,7 @@ from service import analyze_resume, check_answer_with_gamini, evaluate_feedback
 
 load_dotenv()
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})  # בינתיים, פתוח לכולם
 
 @app.route("/upload_resume", methods=["POST"])
 def upload_resume():
@@ -60,4 +60,6 @@ def evaluate_responses():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    port = int(os.environ.get("PORT", 5000))  # Render נותן פורט דינמי
+    app.run(host='0.0.0.0', port=port)
+
