@@ -12,6 +12,7 @@ CORS(app, resources={r"/*": {"origins": "*"}})  # בינתיים, פתוח לכ�
 
 @app.route("/upload_resume", methods=["POST"])
 def upload_resume():
+    
     data = request.get_json()
     file_url = data.get("filePath")
     if not file_url:
@@ -19,14 +20,11 @@ def upload_resume():
 
     temp_path = "temp_resume.pdf"
     try:
-        response = requests.get(file_url)
-        if response.status_code != 200:
-            return jsonify({"error": "Failed to download the file from S3"}), 400
+        
+       
 
-        with open(temp_path, "wb") as f:
-            f.write(response.content)
+        questions = analyze_resume(file_url)  # ✅ שולחת את ה־URL המקורי
 
-        questions = analyze_resume(temp_path)
         return jsonify({"questions": questions}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500

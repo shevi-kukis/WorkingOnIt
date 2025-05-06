@@ -56,10 +56,13 @@ public async Task<IActionResult> Register([FromBody] UserRegisterDto dto)
         public async Task<IActionResult> Login([FromBody] UserLoginDto userLoginDto)
         {
             try
+
             {
+                Console.WriteLine("aaaaaaaa");
                 var token = await _service.LoginAsync(userLoginDto); // קריאה אסינכרונית
                 var user = await _service.GetByEmailAsync(userLoginDto.Email); // קריאה אסינכרונית
                 var resume = await _resumeService.GetResumeByUserId(user.Id);
+                Console.WriteLine("token:"+token);
                 return Ok(new { token, user, resume });
             }
             catch (Exception ex)

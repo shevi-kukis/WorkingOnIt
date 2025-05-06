@@ -17,9 +17,13 @@ def encode_file_to_base64(file_path):
     with open(file_path, "rb") as file:
         return base64.b64encode(file.read()).decode("utf-8")
 
-def analyze_resume(resume_file_path):
+
     print(f"gemini_key: {gemini_api_key}")
     encoded_resume = encode_file_to_base64(resume_file_path)
+def analyze_resume(resume_file_path):
+    print(f"gemini_key: {gemini_api_key}")  # להדפסה לצורך דיבאג
+    encoded_resume = encode_file_to_base64(resume_file_path)
+
     prompt = """שים לב לשאול שאלות על הידע שיש בקורות חיים. 
     נתח את הקובץ וספק רשימה של 4 שאלות בפורמט: { "questions": ["שאלה 1", ...] }"""
 
@@ -50,6 +54,8 @@ def analyze_resume(resume_file_path):
         return response_json.get("questions", [])
     except json.JSONDecodeError:
         return ["שגיאה בפענוח הפלט מהמודל"]
+
+
 
 def check_answer_with_gamini(question, answer):
     prompt = f"""
@@ -102,3 +108,5 @@ def evaluate_feedback(feedback_list):
         summary_text += chunk.text
 
     return summary_text
+import requests
+

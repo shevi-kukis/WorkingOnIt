@@ -1,6 +1,8 @@
 import axios from "axios";
 // const rawBaseUrl = process.env.REACT_APP_API_BASE_URL || "";
-const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || "";
+// const rawBaseUrl = import.meta.env.VITE_API_BASE_URL  
+const rawBaseUrl =process.env.REACT_APP_API_BASE_URL ||"" ;
+
 const axiosInstance = axios.create({
 
      baseURL: `${rawBaseUrl.replace(/\/+$/, "")}/api`,
@@ -8,7 +10,7 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use((config) => {
-
+  console.log("Base URL is:", rawBaseUrl);
   const token = localStorage.getItem("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
