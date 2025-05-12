@@ -43,9 +43,11 @@ const Interview = () => {
 
   useEffect(() => {
     if (resumeFilePath && interviewStarted) {
+      console.log("📄 resumeFilePath שנשלח לשרת:", resumeFilePath)
       dispatch(uploadResume(resumeFilePath))
     }
   }, [resumeFilePath, interviewStarted, dispatch])
+  
 
   useEffect(() => {
     const saveScore = async () => {
