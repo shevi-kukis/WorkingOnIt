@@ -15,7 +15,7 @@ namespace WorkingOnIt.Core.Entities
 
         [Required]
         [MaxLength(50)]
-        public string NameRole { get; set; }
+        public string NameRole { get; set; } = "User";
 
         public List<User> Users { get; set; }
 
@@ -23,7 +23,8 @@ namespace WorkingOnIt.Core.Entities
 
         public static implicit operator int(Role v)
         {
-            throw new NotImplementedException();
+            return v.Id;
         }
+
     }
 }

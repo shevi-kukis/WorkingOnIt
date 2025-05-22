@@ -23,7 +23,12 @@ public class JwtService
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Email, user.Email)
         };
-
+        Console.WriteLine($"User.Role is null: {user.Role == null}");
+        Console.WriteLine($"User.Role.NameRole: {user.Role?.NameRole}");
+        if (user.Role == null)
+        {
+            throw new Exception("User role is null! Ensure it is loaded from DB.");
+        }
         // 📌 לוודא שהתפקיד נטען כראוי
         if (!string.IsNullOrEmpty(user.Role?.NameRole))
         {
@@ -31,7 +36,7 @@ public class JwtService
         }
         else
         {
-            throw new Exception("User role is missing!");
+            throw new Exception("User role is missing!!!!!!!!!!!!!!!!!!");
         }
 
         var token = new JwtSecurityToken(

@@ -9,7 +9,7 @@ const InterviewFeedback: React.FC = () => {
     const questions = useSelector((state: any) => state.interview.questions);
  
     const summary = useSelector((state: any) => state.interview.summary);
-
+console.log("summary", summary)
     const [openIndexes, setOpenIndexes] = useState<number[]>([]);
 
     const toggleFeedback = (index: number) => {

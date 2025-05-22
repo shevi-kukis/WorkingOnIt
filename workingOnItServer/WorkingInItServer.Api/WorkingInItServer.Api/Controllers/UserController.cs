@@ -9,7 +9,8 @@ using WorkingOnIt.Core.Entities;
 using WorkingOnIt.Core.InterfaceService;
 using WorkingOnIt.Core.ModalsDto;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization; // וודא ששימוש ב-Task נעשה נכון
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims; // וודא ששימוש ב-Task נעשה נכון
 namespace WorkingInIt.Api.Controllers
 {
     [Route("api/[controller]")]
@@ -110,6 +111,7 @@ namespace WorkingInIt.Api.Controllers
             }
             return userId;
         }
+
         [Authorize(Policy = "UserOrAdmin")]
 
         [HttpPost("update-resume")]
@@ -126,5 +128,18 @@ namespace WorkingInIt.Api.Controllers
                 return BadRequest(new { message = "Error updating resume.", details = ex.Message });
             }
         }
+        [Authorize(Policy = "UserOrAdmin")]
+        [HttpGet("me")]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            var userId = GetUserIdFromClaims();
+
+            var user = await _service.GetByIdAsync(int.Parse(userId));
+            if (user == null)
+                return NotFound();
+
+            return Ok(user);
+        }
+
     }
 }

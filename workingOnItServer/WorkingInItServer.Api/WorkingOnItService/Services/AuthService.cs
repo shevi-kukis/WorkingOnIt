@@ -28,14 +28,16 @@ namespace WorkingOnIt.Service.Services
             var user = (await _iManager.userRepository.GetAsync()).FirstOrDefault(u => u.Email == email);
             if (user == null)
                 throw new Exception("User not found");
-
             return new UserDto
             {
                 Id = user.Id,
                 FullName = user.FullName,
                 Email = user.Email,
-                PasswordHash = user.PasswordHash
+                PasswordHash = user.PasswordHash,
+                RoleId = user.RoleId,
+                RoleName = user.Role?.NameRole  // ✅ כאן את שולחת גם את שם התפקיד
             };
+
         }
 
         public async Task<string> LoginAsync(UserLoginDto userLoginDto)
@@ -55,27 +57,57 @@ namespace WorkingOnIt.Service.Services
             return _jwtService.GenerateToken(user);
         }
 
+        //public async Task<User?> RegisterUserAsync(UserRegisterDto model)
+        //{
+        //    var user = (await _iManager.userRepository.GetAsync()).FirstOrDefault(u => u.Email == model.Email);
+        //    if (user != null)
+        //        throw new Exception("User already exist");
+
+        //    var hashedPassword = BCrypt.Net.BCrypt.HashPassword(model.Password);
+
+        //    user = new User
+        //    {
+        //        FullName = model.FullName,
+        //        Email = model.Email,
+        //        PasswordHash = hashedPassword,
+        //          //RoleId = model.RoleId // ✅ שורת מפתח!
+        //    };
+
+        //    // ✅ הוספת await כאן:
+        //    await _iManager.userRepository.AddAsync(user);
+        //    await _iManager.SaveAsync();
+
+        //    return user;
+        //}
         public async Task<User?> RegisterUserAsync(UserRegisterDto model)
         {
-            var user = (await _iManager.userRepository.GetAsync()).FirstOrDefault(u => u.Email == model.Email);
-            if (user != null)
+            var existingUser = (await _iManager.userRepository.GetAsync())
+                .FirstOrDefault(u => u.Email == model.Email);
+            if (existingUser != null)
                 throw new Exception("User already exist");
 
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(model.Password);
 
-            user = new User
+            // שליפת תפקיד ברירת מחדל
+            var role = await _iManager.rolesRepsoitory.GetByIdAsync(2);
+            if (role == null)
+                throw new Exception("User role is missing!");
+
+            var user = new User
             {
                 FullName = model.FullName,
                 Email = model.Email,
-                PasswordHash = hashedPassword
+                PasswordHash = hashedPassword,
+                RoleId = role.Id,
+                Role = role
             };
 
-            // ✅ הוספת await כאן:
             await _iManager.userRepository.AddAsync(user);
             await _iManager.SaveAsync();
 
             return user;
         }
+
 
 
     }

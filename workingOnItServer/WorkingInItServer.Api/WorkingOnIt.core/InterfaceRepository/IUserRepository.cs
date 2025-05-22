@@ -12,6 +12,6 @@ namespace WorkingOnIt.Core.InterfaceRepository
     {
         public Task<IEnumerable<User>> GetAsyncFull(params Expression<Func<User, object>>[] includes);
 
-
+        public Task<User?> GetByIdWithRoleAsync(int id);
     }
 }

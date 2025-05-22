@@ -75,8 +75,9 @@ internal class Program
                 policy.WithOrigins(
                      "http://localhost:5173",
                        "https://localhost:5173",
-                    "https://workingonit.onrender.com"
-                 
+                    "https://workingonit.onrender.com",
+                   "http://localhost:4200",
+                       "https://localhost:4200"
                  )
                       .AllowAnyMethod()
                       .AllowAnyHeader()

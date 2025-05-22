@@ -26,6 +26,13 @@ namespace WorkingOnIt.Data.Repository
 
             return await query.ToListAsync();
         }
+        public async Task<User?> GetByIdWithRoleAsync(int id)
+        {
+            return await _dbSet
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.Id == id);
+        }
+
 
     }
 }

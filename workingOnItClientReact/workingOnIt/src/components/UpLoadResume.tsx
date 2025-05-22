@@ -18,6 +18,7 @@ const UploadResume = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { state, dispatch } = useAuth();
+  const [uploadSuccess, setUploadSuccess] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] || null;
@@ -25,26 +26,69 @@ const UploadResume = () => {
     setError("");
   };
 
+
+  // const handleUpload = async () => {
+  //   if (!file) return;
+  //   setLoading(true);
+  //   setError("");
+  
+  //   const formData = new FormData();
+  //   formData.append("file", file);
+  //   formData.append("roleId", state.user?.roleId?.toString() || "");
+  //   formData.append("userId", state.user?.id?.toString() || "");
+    
+  
+  //   try {
+  //     const response = await axiosInstance.post("/resume/upload", formData, {
+  //       headers: { "Content-Type": "multipart/form-data" },
+  //     });
+  //     console.log("response.data", response.data);
+  //     console.log("Resume uploaded successfully:", response.data.resume.filePath);
+  
+     
+  //     dispatch({ type: "UPDATE_RESUME", payload: response. data.resume }); // ✅ עדכון סטייט
+
+  
+ 
+  //     localStorage.setItem("token", response.data.resume); // ✅ שימוש ב-token העדכני
+  
+  //     setUploadSuccess(true);
+  //     setError("");
+  //     setFile(null);
+  //   } catch (err) {
+  //     console.error("Upload failed", err);
+  //     setError("Upload failed. Please try again.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
   const handleUpload = async () => {
     if (!file) return;
     setLoading(true);
     setError("");
-
+  
     const formData = new FormData();
     formData.append("file", file);
-
+    formData.append("roleId", state.user?.roleId?.toString() || "");
+    formData.append("userId", state.user?.id?.toString() || "");
     try {
       const response = await axiosInstance.post("/resume/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
-      const resumeData = response.data;
-      dispatch({ type: "UPDATE_RESUME", payload: resumeData }); // ✅ עדכון סטייט
-       // שלב 2: לקרוא ל-login מחדש
-   
-
-
-      
+  
+      console.log("response.data", response.data);
+      console.log("Resume uploaded successfully:", response.data.fileUrl);
+  
+      // שמירת הטוקן החדש
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token);
+      }
+  
+      // אם אתה רוצה לעדכן את סטייט המשתמש עם הנתיב של קובץ קורות החיים:
+      dispatch({ type: "UPDATE_RESUME", payload: { filePath: response.data.fileUrl } });
+  
+      setUploadSuccess(true);
+      setError("");
       setFile(null);
     } catch (err) {
       console.error("Upload failed", err);
@@ -53,7 +97,8 @@ const UploadResume = () => {
       setLoading(false);
     }
   };
-
+  
+  
   const handleDownload = () => {
     if (!state.resume?.filePath) return;
     window.open(state.resume.filePath, "_blank");
@@ -97,7 +142,7 @@ const UploadResume = () => {
               {loading ? "Uploading..." : "Upload"}
             </Button>
 
-            {state.resume?.filePath && (
+            {(uploadSuccess||state.resume?.filePath ) && (
               <Button
                 variant="outlined"
                 color="secondary"
@@ -109,7 +154,7 @@ const UploadResume = () => {
             )}
           </Stack>
 
-          {state.resume?.fileName && (
+          {uploadSuccess || state.resume?.filePath  && (
             <Alert severity="success" sx={{ mt: 3 }}>
               Resume uploaded successfully!
             </Alert>

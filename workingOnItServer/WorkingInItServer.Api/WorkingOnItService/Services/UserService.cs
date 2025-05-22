@@ -45,7 +45,12 @@ namespace WorkingOnIt.Service.Services
             UserDto userDto = _mapper.Map<UserDto>(user);
             return userDto;
         }
-
+        public async Task<User> GetByIdAsyncUser(int id)
+        {
+            User user = await _iManager.userRepository.GetByIdWithRoleAsync(id);
+      
+            return user;
+        }
         public async Task<UserDto> AddAsync(UserDto userDto)
         {
             User user = _mapper.Map<User>(userDto);
@@ -59,7 +64,7 @@ namespace WorkingOnIt.Service.Services
                 await _iManager.SaveAsync();
 
             userDto = _mapper.Map<UserDto>(user);
-            userDto.Role = role;
+            userDto.RoleId = role;
 
             return userDto;
         }
@@ -114,7 +119,7 @@ namespace WorkingOnIt.Service.Services
 
         public async Task<UserDto> UpdateUserAsync(int userId, UserDto updatedUser)
         {
-            var user = await _iManager.userRepository.GetByIdAsync(userId);
+            var user = await _iManager.userRepository.GetByIdWithRoleAsync(userId);
             if (user == null)
             {
                 throw new Exception("User not found");
@@ -122,6 +127,8 @@ namespace WorkingOnIt.Service.Services
 
             user.FullName = updatedUser.FullName ?? user.FullName;
             user.Email = updatedUser.Email ?? user.Email;
+            user.RoleId = updatedUser.RoleId ;
+
 
             await _iManager.userRepository.UpdateAsync(user.Id, user);
             await _iManager.SaveAsync();
@@ -130,7 +137,8 @@ namespace WorkingOnIt.Service.Services
             {
                 Id = user.Id,
                 FullName = user.FullName,
-                Email = user.Email
+                Email = user.Email,
+                RoleId=user.RoleId
             };
         }
     }

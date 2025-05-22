@@ -17,6 +17,8 @@ namespace WorkingOnIt.Core.Dtos
         public string Email { get; set; } = "";
         public string PasswordHash { get; set; } = "";
 
-        public int Role { get; set; }
+        public int RoleId { get; set; } = 2;
+        public string RoleName { get; set; }
+
     }
 }

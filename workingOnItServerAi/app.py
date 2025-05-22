@@ -4,7 +4,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 import requests
 
-from service import analyze_resume, check_answer_with_gamini, evaluate_feedback
+from service import analyze_resume, analyze_resume_from_url, check_answer_with_gamini, evaluate_feedback
 
 load_dotenv()
 app = Flask(__name__)
@@ -14,6 +14,7 @@ CORS(app, resources={r"/*": {"origins": "*"}})  # בינתיים, פתוח לכ�
 def upload_resume():
     
     data = request.get_json()
+    print(data)
     file_url = data.get("filePath")
     if not file_url:
         return jsonify({"error": "Invalid or missing file path"}), 400
@@ -23,8 +24,9 @@ def upload_resume():
         
        
 
-        questions = analyze_resume(file_url)  # ✅ שולחת את ה־URL המקורי
-
+        # questions = analyze_resume(file_url)  # ✅ שולחת את ה־URL המקור
+        questions = analyze_resume_from_url(file_url)
+        print(questions)
         return jsonify({"questions": questions}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -53,7 +55,8 @@ def evaluate_responses():
             return jsonify({"error": "Feedback list must be provided"}), 400
 
         summary = evaluate_feedback(feedback_list)
-        return jsonify(summary), 200
+        return jsonify({"summary": summary}), 200
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

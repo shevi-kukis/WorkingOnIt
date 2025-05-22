@@ -12,6 +12,7 @@ export const uploadResume: any = createAsyncThunk(
     async (filePath: string, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.post(`/Resume/analyze`, { filePath });
+            console.log("response from server:", response.data); // לבדיקה
             return response.data.questions;
         } catch (error: any) {
             return rejectWithValue(error.response?.data || 'Error uploading resume');

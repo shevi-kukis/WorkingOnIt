@@ -19,7 +19,9 @@ interface User {
   fullName: string;
   email: string;
   password: string;
-  role: number;
+
+  roleId: number;       // מזהה התפקיד (מספר)
+  roleName: string;   
 }
 
 type AuthAction =
@@ -27,7 +29,7 @@ type AuthAction =
   | { type: "LOGOUT" }
   | { type: "UPDATE_USER"; payload: Partial<User> }
   | { type: "REGISTER"; payload: { user: User; token: string; resume: Resume | null } }
-  | { type: "UPDATE_RESUME"; payload: Resume };
+  | { type: "UPDATE_RESUME"; payload:Partial<Resume> };
 
 const initialState: AuthState = {
   user: null,
@@ -37,7 +39,9 @@ const initialState: AuthState = {
 
 // ... imports ...
 
+
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
+  
     switch (action.type) {
       case "LOGIN":
         return {
@@ -59,7 +63,12 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
           token: action.payload.token,
         };
       case "UPDATE_RESUME":
-        return { ...state, resume: action.payload };
+        return { 
+          ...state, 
+          resume: state.resume 
+            ? { ...state.resume, ...action.payload } 
+            : { id: 0, fileName: "", filePath: "", ...action.payload } 
+        };
       default:
         return state;
     }
@@ -71,19 +80,28 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   
   export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [state, dispatch] = useReducer(authReducer, initialState);
+  // בקובץ AuthContext.tsx
+
+
+
+
+
+
+
+  return (
+    <AuthContext.Provider value={{ state, dispatch }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+    
   
-    return (
-      <AuthContext.Provider value={{ state, dispatch }}>
-        {children}
-      </AuthContext.Provider>
-    );
-  };
+  
   
   export const useAuth = () => {
     const context = useContext(AuthContext);
-    if (!context) {
-      throw new Error("useAuth must be used within an AuthProvider");
-    }
-    return context;
+    if (!context) throw new Error("useAuth must be used within an AuthProvider");
+    return context; // ← כולל refreshUserData עכשיו
   };
   

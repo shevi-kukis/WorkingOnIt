@@ -28,7 +28,7 @@ namespace WorkingOnIt.Core.InterfaceService
 
 
 
-
+        public Task<User> GetByIdAsyncUser(int id);
 
 
         public  Task UpdateResumeAsync(int userId, IFormFile resumeFile);

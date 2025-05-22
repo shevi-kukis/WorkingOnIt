@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using WorkingOnIt.Core.Dtos;
+using WorkingOnIt.Core.Entities;
 using WorkingOnIt.Core.InterfaceService;
 using WorkingOnIt.Core.ModalsDto;
 
@@ -14,8 +15,11 @@ namespace WorkingInIt.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ResumeController(IResumeService service, IHttpClientFactory httpClientFactory) : ControllerBase
+    public class ResumeController(IResumeService service, IHttpClientFactory httpClientFactory, JwtService tokenService,
+    IUserService userService) : ControllerBase
     {
+        private readonly JwtService _tokenService=tokenService;
+        private readonly IUserService _userService=userService;
         private readonly IResumeService _service = service;
         private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
         // GET: api/Resume
@@ -58,6 +62,33 @@ namespace WorkingInIt.Api.Controllers
         //        return NotFound();
         //    return Ok(result);
         //}
+        //[Authorize(Policy = "UserOrAdmin")]
+        //[HttpPost("upload")]
+        //public async Task<IActionResult> UploadResume([FromForm] IFormFile file)
+        //{
+        //    try
+        //    {
+        //        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        //        if (userIdClaim == null)
+        //            return Unauthorized("User not found");
+
+        //        if (!int.TryParse(userIdClaim.Value, out int userId))
+        //            return BadRequest("Invalid user ID");
+
+        //        Console.WriteLine($"User ID: {userId}, File Name: {file.FileName}");
+
+        //        var fileUrl = await _service.UploadResumeAsync(userId, file);
+
+        //        return Ok(new { fileUrl });
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"Upload error: {ex}");
+        //        return StatusCode(500, ex.Message);
+        //    }
+        //}
+
         [Authorize(Policy = "UserOrAdmin")]
         [HttpPost("upload")]
         public async Task<IActionResult> UploadResume([FromForm] IFormFile file)
@@ -73,8 +104,18 @@ namespace WorkingInIt.Api.Controllers
 
                 Console.WriteLine($"User ID: {userId}, File Name: {file.FileName}");
 
+                // העלאת קובץ
                 var fileUrl = await _service.UploadResumeAsync(userId, file);
-                return Ok(new { fileUrl });
+
+                // קבלת אובייקט המשתמש
+                var user = await _userService.GetByIdAsyncUser(userId);
+                if (user == null)
+                    return NotFound("User not found in DB");
+
+                // יצירת טוקן חדש
+                var token = _tokenService.GenerateToken(user);
+
+                return Ok(new { fileUrl, token });
             }
             catch (Exception ex)
             {
@@ -82,7 +123,6 @@ namespace WorkingInIt.Api.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-
 
 
         [Authorize(Policy = "UserOrAdmin")]
@@ -136,7 +176,7 @@ namespace WorkingInIt.Api.Controllers
 
             var pythonApiUrl = $"{Environment.GetEnvironmentVariable("PYTHON_API")}/upload_resume";
 
-
+            Console.WriteLine(pythonApiUrl);
             try
             {
                 var response = await client.PostAsJsonAsync(pythonApiUrl, payload);
