@@ -37,6 +37,8 @@ namespace WorkingOnIt.Service.Services
             return _mapper.Map<ResumeDto>(resume);
         }
 
+
+
         public async Task<string> UploadResumeAsync(int userId, IFormFile file)
         {
             try
@@ -49,15 +51,33 @@ namespace WorkingOnIt.Service.Services
                 Console.WriteLine($"Uploading resume for User ID: {userId}");
                 Console.WriteLine($"File URL: {fileUrl}");
 
-                var resume = new Resume
-                {
-                    UserId = userId,
-                    FilePath = fileUrl,
-                    FileName = file.FileName,
-                    UploadDate = DateTime.UtcNow
-                };
+                // האם כבר קיים קובץ למשתמש הזה?
+                var existingResume = await _iManager.resumeRepository
+                    .FindFirstAsync(r => r.UserId == userId);
 
-                await _iManager.resumeRepository.AddAsync(resume);
+                if (existingResume != null)
+                {
+                    // עדכון
+                    existingResume.FilePath = fileUrl;
+                    existingResume.FileName = file.FileName;
+                    existingResume.UploadDate = DateTime.UtcNow;
+
+                    _iManager.resumeRepository.UpdateAsync(existingResume.Id, existingResume);
+                }
+                else
+                {
+                    // הוספה
+                    var newResume = new Resume
+                    {
+                        UserId = userId,
+                        FilePath = fileUrl,
+                        FileName = file.FileName,
+                        UploadDate = DateTime.UtcNow
+                    };
+
+                    await _iManager.resumeRepository.AddAsync(newResume);
+                }
+
                 await _iManager.SaveAsync(); // שמירת השינויים במסד הנתונים
 
                 return fileUrl;
@@ -68,7 +88,6 @@ namespace WorkingOnIt.Service.Services
                 throw;
             }
         }
-
 
 
         public async Task<string> UpdateResumeAsync(int userId, IFormFile file)

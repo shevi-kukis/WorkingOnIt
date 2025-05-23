@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer } from "react";
+import React, { createContext, useContext, useEffect, useReducer } from "react";
 import axiosInstance from "./axiosInstance";
 
 // 🔹 סוג הסטייט
@@ -84,7 +84,21 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
 
 
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const userStr = localStorage.getItem("user");
+    const resumeStr = localStorage.getItem("resume");
 
+    if (token && userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        const resume = resumeStr ? JSON.parse(resumeStr) : null;
+        dispatch({ type: "LOGIN", payload: { user, token, resume } });
+      } catch (error) {
+        console.error("Failed to parse user or resume from localStorage", error);
+      }
+    }
+  }, []);
 
 
 

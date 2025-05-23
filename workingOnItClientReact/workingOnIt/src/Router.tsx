@@ -8,7 +8,7 @@ import Register from "./components/Register"
 import Interview from "./components/Interview"
 import InterviewTips from "./components/InterviewTips"
 import EditProfile from "./components/EditProfile"
-// import UpdateResume from "./components/UpdateResume"
+
 import UpLoadResume from "./components/UpLoadResume"
 
 import { useAuth } from "./components/AuthContext"
@@ -16,6 +16,7 @@ import type { JSX } from "react/jsx-runtime"
 import DownLaodResume from "./components/DownLaodResume"
 
 import InterviewScoresChart from "./components/InterviewScoresChart "
+
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {

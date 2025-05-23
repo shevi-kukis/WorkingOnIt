@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using WorkingOnIt.Core.Entities;
@@ -21,6 +22,11 @@ namespace WorkingOnIt.Data.Repository
                 .Where(r => r.UserId == userId)
                 .FirstOrDefaultAsync();
         }
+        public async Task<Resume?> FindFirstAsync(Expression<Func<Resume, bool>> predicate)
+        {
+            return await _dbSet.FirstOrDefaultAsync(predicate);
+        }
+
     }
- }
+}
 

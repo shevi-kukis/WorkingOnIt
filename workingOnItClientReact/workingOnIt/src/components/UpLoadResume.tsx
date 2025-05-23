@@ -13,82 +13,47 @@ import DownloadIcon from "@mui/icons-material/Download";
 import { useAuth } from "./AuthContext";
 import axiosInstance from "./axiosInstance";
 
-const UploadResume = () => {
+const UpLoadResume = () => {
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   const { state, dispatch } = useAuth();
-  const [uploadSuccess, setUploadSuccess] = useState(false);
+
+  const resumeExists = Boolean(state.resume?.filePath);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0] || null;
-    setFile(selectedFile);
+    setFile(e.target.files?.[0] || null);
     setError("");
+    setSuccess(false);
   };
 
-
-  // const handleUpload = async () => {
-  //   if (!file) return;
-  //   setLoading(true);
-  //   setError("");
-  
-  //   const formData = new FormData();
-  //   formData.append("file", file);
-  //   formData.append("roleId", state.user?.roleId?.toString() || "");
-  //   formData.append("userId", state.user?.id?.toString() || "");
-    
-  
-  //   try {
-  //     const response = await axiosInstance.post("/resume/upload", formData, {
-  //       headers: { "Content-Type": "multipart/form-data" },
-  //     });
-  //     console.log("response.data", response.data);
-  //     console.log("Resume uploaded successfully:", response.data.resume.filePath);
-  
-     
-  //     dispatch({ type: "UPDATE_RESUME", payload: response. data.resume }); // ✅ עדכון סטייט
-
-  
- 
-  //     localStorage.setItem("token", response.data.resume); // ✅ שימוש ב-token העדכני
-  
-  //     setUploadSuccess(true);
-  //     setError("");
-  //     setFile(null);
-  //   } catch (err) {
-  //     console.error("Upload failed", err);
-  //     setError("Upload failed. Please try again.");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-  const handleUpload = async () => {
+  const handleUploadOrUpdate = async () => {
     if (!file) return;
     setLoading(true);
     setError("");
-  
+    setSuccess(false);
+
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("roleId", state.user?.roleId?.toString() || "");
     formData.append("userId", state.user?.id?.toString() || "");
+    formData.append("roleId", state.user?.roleId?.toString() || "");
+
     try {
       const response = await axiosInstance.post("/resume/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-  
-      console.log("response.data", response.data);
-      console.log("Resume uploaded successfully:", response.data.fileUrl);
-  
-      // שמירת הטוקן החדש
+
+      dispatch({
+        type: "UPDATE_RESUME",
+        payload: { filePath: response.data.fileUrl, fileName: file.name },
+      });
+
       if (response.data.token) {
         localStorage.setItem("token", response.data.token);
       }
-  
-      // אם אתה רוצה לעדכן את סטייט המשתמש עם הנתיב של קובץ קורות החיים:
-      dispatch({ type: "UPDATE_RESUME", payload: { filePath: response.data.fileUrl } });
-  
-      setUploadSuccess(true);
-      setError("");
+
+      setSuccess(true);
       setFile(null);
     } catch (err) {
       console.error("Upload failed", err);
@@ -97,8 +62,7 @@ const UploadResume = () => {
       setLoading(false);
     }
   };
-  
-  
+
   const handleDownload = () => {
     if (!state.resume?.filePath) return;
     window.open(state.resume.filePath, "_blank");
@@ -107,8 +71,8 @@ const UploadResume = () => {
   return (
     <Container maxWidth="sm" sx={{ mt: 6 }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
-        <Typography variant="h4" gutterBottom align="center">
-          Upload Your Resume
+        <Typography variant="h5" gutterBottom align="center">
+          {resumeExists ? "Update Your Resume" : "Upload Your Resume"}
         </Typography>
 
         <Box sx={{ mt: 2, textAlign: "center" }}>
@@ -117,11 +81,11 @@ const UploadResume = () => {
             type="file"
             onChange={handleFileChange}
             style={{ display: "none" }}
-            id="resume-upload"
+            id="resume-file-input"
           />
-          <label htmlFor="resume-upload">
+          <label htmlFor="resume-file-input">
             <Button variant="outlined" component="span">
-              Choose File
+              {resumeExists ? "Choose New File" : "Choose File"}
             </Button>
           </label>
 
@@ -136,13 +100,13 @@ const UploadResume = () => {
               variant="contained"
               color="primary"
               startIcon={<CloudUploadIcon />}
-              onClick={handleUpload}
+              onClick={handleUploadOrUpdate}
               disabled={!file || loading}
             >
-              {loading ? "Uploading..." : "Upload"}
+              {loading ? "Uploading..." : resumeExists ? "Update" : "Upload"}
             </Button>
 
-            {(uploadSuccess||state.resume?.filePath ) && (
+            {resumeExists && (
               <Button
                 variant="outlined"
                 color="secondary"
@@ -154,9 +118,9 @@ const UploadResume = () => {
             )}
           </Stack>
 
-          {uploadSuccess || state.resume?.filePath  && (
+          {success && (
             <Alert severity="success" sx={{ mt: 3 }}>
-              Resume uploaded successfully!
+              Resume {resumeExists ? "updated" : "uploaded"} successfully!
             </Alert>
           )}
 
@@ -171,4 +135,4 @@ const UploadResume = () => {
   );
 };
 
-export default UploadResume;
+export default UpLoadResume;

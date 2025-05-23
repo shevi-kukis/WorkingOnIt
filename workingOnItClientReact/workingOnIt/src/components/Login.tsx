@@ -64,7 +64,10 @@ const Login = () => {
       });
       localStorage.setItem("token", response.data.token);
 
-    
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+      if (response.data.resume) {
+        localStorage.setItem("resume", JSON.stringify(response.data.resume));
+      }
       navigate("/")
     } catch (err) {
       setError("Invalid email or password. Please try again.")
