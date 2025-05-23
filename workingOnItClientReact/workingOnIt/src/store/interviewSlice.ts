@@ -55,8 +55,9 @@ export const evaluateResponses: any = createAsyncThunk(
         const response = await axiosInstance.post(`/InterviewQuestions/evaluate`, {
             feedback_list: feedbackTexts,
         });
-     console.log("response from server:", response.data); // לבדיקה
-        return response.data;
+        console.log("response from server:", JSON.stringify(response.data.summary, null, 2));
+
+        return response.data.summary; // ✅ נניח שהשרת מחזיר מערך של אובייקטים
     }
 );
 
@@ -66,7 +67,7 @@ export const initialState: interviewState = {
     currentQuestionIndex: 0,
     feedbacks: [],
 
-    summary: [[]],
+    summary: [],
     status: 'idle',
     error: null,
     isInterviewFinished: false, // ✅ משתנה חדש לזיהוי סוף הראיון
@@ -105,17 +106,17 @@ const interviewSlice = createSlice({
             })
      
             .addCase(evaluateResponses.fulfilled, (state, action) => {
-              
-                const summary = action.payload.summary;
-                if (Array.isArray(summary)) {
-                    state.summary = Array.isArray(summary) ? summary : [[]];
+                // אם ה-summary הוא אובייקט, שמור אותו ישירות
+                if (action.payload && typeof action.payload === 'object' && !Array.isArray(action.payload)) {
+                  state.summary = action.payload;
                 } else {
-                    state.summary = [[]];
+                  // אם התקבל מערך או משהו אחר (לפי הצורה של השרת) – בדוק בהתאם
+                  state.summary = action.payload || {};
                 }
-                
-            
                 state.isInterviewFinished = true;
-            });
+              });
+              
+            
             
             }
             

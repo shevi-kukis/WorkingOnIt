@@ -10,6 +10,8 @@ const InterviewFeedback: React.FC = () => {
  
     const summary = useSelector((state: any) => state.interview.summary);
 console.log("summary", summary)
+console.log("feedbacks", feedbacks)
+console.log("questions", questions)
     const [openIndexes, setOpenIndexes] = useState<number[]>([]);
 
     const toggleFeedback = (index: number) => {
@@ -21,8 +23,9 @@ console.log("summary", summary)
     useEffect(() => {
         console.log("Updated summary:", summary);
       }, [summary]);
-const strengths: string[] = [];
-const toImprove: string[] = [];
+      const strengths: string[] = summary?.strengths || [];
+      const toImprove: string[] = summary?.weaknesses || [];
+      
 
 if (Array.isArray(summary)) {
   summary.flat().forEach((item: string) => {
@@ -122,5 +125,6 @@ if (Array.isArray(summary)) {
         </div>
     );
 };
+
 
 export default InterviewFeedback;

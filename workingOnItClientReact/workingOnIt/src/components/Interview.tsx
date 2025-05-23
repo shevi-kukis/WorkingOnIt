@@ -35,31 +35,14 @@ const Interview = () => {
   const currentQuestionIndex = useSelector((state: StoreType) => state.interview.currentQuestionIndex)
   const feedbacks = useSelector((state: StoreType) => state.interview.feedbacks as unknown as { feedback: string; score: number }[])
   const isFinished = useSelector((state: StoreType) => state.interview.isInterviewFinished)
-  const summary = useSelector((state: StoreType) => state.interview.summary as unknown as string[][])
+  let summary = useSelector((state: StoreType) => state.interview.summary as unknown as string[][])
 
   const resumeFilePath = state.resume?.filePath
 
   const totalScore = feedbacks.reduce((total, item) => total + item.score, 0)
   const hasSubmittedScore = useRef(false)
 
-  // useEffect(() => {
-  //   const saveScore = async () => {
-  //     if (isFinished && state.user?.id && feedbacks.length > 0 && !hasSubmittedScore.current) {
-  //       try {
-  //         await axiosInstance.post("/Interview/submit", {
-  //           userId: state.user.id,
-  //           score: totalScore,
-  //         })
-  //         console.log("Interview score saved")
-  //         hasSubmittedScore.current = true // סימון שהציון נשמר
-  //       } catch (error) {
-  //         console.error("Failed to save interview score:", error)
-  //       }
-  //     }
-  //   }
-  
-  //   saveScore()
-  // }, [isFinished, state.user?.id, feedbacks, totalScore])
+
   useEffect(() => {
     const saveScore = async () => {
       if (
@@ -95,23 +78,7 @@ const Interview = () => {
   useEffect(() => {
     dispatch(resetInterview())
   }, [dispatch])
-  // useEffect(() => {
-  //   const saveScore = async () => {
-  //     if (isFinished && state.user?.id && feedbacks.length > 0) {
-  //       try {
-  //         await axiosInstance.post("/Interview/submit", {
-  //           userId: state.user.id,
-  //           score: totalScore,
-  //         })
-  //         console.log("Interview score saved")
-  //       } catch (error) {
-  //         console.error("Failed to save interview score:", error)
-  //       }
-  //     }
-  //   }
 
-  //   saveScore()
-  // }, [isFinished, state.user?.id, feedbacks, totalScore])
 
   const handleSubmitAnswer = async () => {
     if (!answer.trim()) return
@@ -121,7 +88,14 @@ const Interview = () => {
     // await dispatch(addFeedback(result))
 
     if (currentQuestionIndex >= questions.length - 1) {
-      await dispatch(evaluateResponses())
+    
+    {
+       summary= await dispatch(evaluateResponses());
+if (evaluateResponses.fulfilled.match(result)) {
+  console.log("המשוב התקבל:", result.payload);
+}
+
+    }
     } else {
       await dispatch(nextQuestion())
     }
