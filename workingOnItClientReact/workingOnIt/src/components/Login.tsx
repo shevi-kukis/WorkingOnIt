@@ -100,7 +100,7 @@ const Login = () => {
           <Box sx={{ mb: 3, textAlign: "center" }}>
             <img src="/logo.svg" alt="WorkingOnIt Logo" style={{ height: 60, marginBottom: 16 }} />
             <Typography component="h1" variant="h5" color="primary" fontWeight={500}>
-              Sign in to WorkingOnIt
+              Sign in to WorkingOnIt!!!
             </Typography>
           </Box>
 
