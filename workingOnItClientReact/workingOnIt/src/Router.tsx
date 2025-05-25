@@ -9,13 +9,13 @@ import Interview from "./components/Interview"
 import InterviewTips from "./components/InterviewTips"
 import EditProfile from "./components/EditProfile"
 
-import UpLoadResume from "./components/UpLoadResume"
 
 import { useAuth } from "./components/AuthContext"
 import type { JSX } from "react/jsx-runtime"
 import DownLaodResume from "./components/DownLaodResume"
 
 import InterviewScoresChart from "./components/InterviewScoresChart "
+import UpLoadResume from "./components/UpLoadResume"
 
 
 // Protected route component

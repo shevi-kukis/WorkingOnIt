@@ -197,6 +197,14 @@ namespace WorkingInIt.Api.Controllers
         }
 
 
+        [HttpGet("by-user/{userId}")]
+        public async Task<ActionResult<ResumeDto>> GetByUserId(int userId)
+        {
+            var result = await _service.GetResumeByUserId(userId);
+            if (result == null)
+                return NotFound();
+            return Ok(result);
+        }
 
 
     }

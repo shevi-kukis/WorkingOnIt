@@ -163,7 +163,7 @@ const EditProfile = () => {
           <Divider sx={{ my: 4 }} />
 
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Button variant="outlined" color="primary" onClick={() => navigate("/update-resume")}>
+            <Button variant="outlined" color="primary" onClick={() => navigate("/uploadResume")}>
               Update Resume
             </Button>
             <Button type="submit" variant="contained" color="primary" startIcon={<SaveIcon />} disabled={loading}>

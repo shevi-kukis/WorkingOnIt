@@ -5,6 +5,7 @@ using WorkingOnIt.Core.Dtos;
 using WorkingOnIt.Core.Entities;
 using WorkingOnIt.Core.InterfaceRepository;
 using WorkingOnIt.Core.InterfaceService;
+using WorkingOnIt.Core.ModalsDto;
 
 namespace WorkingOnIt.Service.Services
 {
@@ -51,6 +52,31 @@ namespace WorkingOnIt.Service.Services
         public async Task<List<Interview>> GetUserInterviewsAsync(int userId)
         {
             return await _iManager.interviewRepository.GetByUserIdAsync(userId);
+        }
+        public async Task<Dictionary<int, List<InterviewScore>>> GetAllUserScoresAsync()
+        {
+            var interviews = await _iManager.interviewRepository.GetAsync();
+              
+
+            var grouped = new Dictionary<int, List<InterviewScore>>();
+
+            foreach (var interview in interviews)
+            {
+                var userId = interview.User.Id;
+
+                if (!grouped.ContainsKey(userId))
+                {
+                    grouped[userId] = new List<InterviewScore>();
+                }
+
+                grouped[userId].Add(new InterviewScore
+                {
+                    Date = interview.InterviewDate,
+                    Score = interview.Score
+                });
+            }
+
+            return grouped;
         }
     }
 }

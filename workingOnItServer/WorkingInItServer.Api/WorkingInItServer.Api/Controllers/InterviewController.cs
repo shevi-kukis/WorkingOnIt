@@ -4,6 +4,8 @@ using WorkingOnIt.Core.InterfaceService;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using WorkingOnIt.Core.Entities;
+using WorkingOnIt.Core.ModalsDto;
+using WorkingOnIt.Service.Services;
 
 namespace WorkingOnIt.Api.Controllers
 {
@@ -86,6 +88,12 @@ namespace WorkingOnIt.Api.Controllers
                     score = i.Score
                 });
 
+            return Ok(result);
+        }
+        [HttpGet("scores/all")]
+        public async Task<ActionResult<Dictionary<int, List<InterviewScore>>>> GetAllUserScores()
+        {
+            var result = await _service.GetAllUserScoresAsync();
             return Ok(result);
         }
 
