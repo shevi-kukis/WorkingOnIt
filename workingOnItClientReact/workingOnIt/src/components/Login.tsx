@@ -21,6 +21,7 @@ import {
 import { Visibility, VisibilityOff, Email, Lock } from "@mui/icons-material"
 import { useAuth } from "./AuthContext"
 import axiosInstance from "./axiosInstance"
+import axios from "axios"
 
 const Login = () => {
   const { dispatch } = useAuth()
@@ -69,9 +70,15 @@ const Login = () => {
         localStorage.setItem("resume", JSON.stringify(response.data.resume));
       }
       navigate("/")
-    } catch (err) {
-      setError("Invalid email or password. Please try again.")
-    } finally {
+    }  catch (err) {
+      if (axios.isAxiosError(err)) {
+        const messageFromServer = err.response?.data?.message || "Registration failed. Please try again."
+        setError(messageFromServer)
+      } else {
+        setError("Something went wrong. Please try again.")
+      }
+    }
+     finally {
       setLoading(false)
     }
   }

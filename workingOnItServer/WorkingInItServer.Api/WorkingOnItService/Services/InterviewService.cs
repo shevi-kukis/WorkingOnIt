@@ -55,8 +55,9 @@ namespace WorkingOnIt.Service.Services
         }
         public async Task<Dictionary<int, List<InterviewScore>>> GetAllUserScoresAsync()
         {
-            var interviews = await _iManager.interviewRepository.GetAsync();
-              
+            var interviews = await _iManager.interviewRepository.GetWithUserAsync();
+
+
 
             var grouped = new Dictionary<int, List<InterviewScore>>();
 

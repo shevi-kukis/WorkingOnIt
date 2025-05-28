@@ -12,7 +12,7 @@ import EditProfile from "./components/EditProfile"
 
 import { useAuth } from "./components/AuthContext"
 import type { JSX } from "react/jsx-runtime"
-import DownLaodResume from "./components/DownLaodResume"
+
 
 import InterviewScoresChart from "./components/InterviewScoresChart "
 import UpLoadResume from "./components/UpLoadResume"
@@ -91,16 +91,7 @@ const Router = () => {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/download-resume"
-          element={
-            <ProtectedRoute>
-              <AppLayout>
-                <DownLaodResume />
-              </AppLayout>
-            </ProtectedRoute>
-          }
-        />
+       
          <Route
           path="/chart"
           element={

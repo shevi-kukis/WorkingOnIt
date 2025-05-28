@@ -105,8 +105,12 @@ namespace WorkingOnIt.Service.Services
         public async Task<string?> GetDownloadUrlAsync(int userId)
         {
             var resume = await _iManager.resumeRepository.GetByUserIdAsync(userId);
-            return resume != null ? await _s3Service.GeneratePresignedDownloadUrlAsync(resume.FilePath) : null;
+            if (resume == null || string.IsNullOrEmpty(resume.FilePath))
+                return null;
+
+            return resume.FilePath; // אין צורך ב-S3Service
         }
+
 
 
 

@@ -9,7 +9,7 @@ using WorkingOnIt.Core.InterfaceService;
 
 namespace WorkingOnIt.Service.Services
 {
-    public class AuthService:IAuthService
+    public class AuthService : IAuthService
     {
         private readonly IRepositoryManager _iManager;
         private readonly IMapper _mapper;
@@ -45,6 +45,12 @@ namespace WorkingOnIt.Service.Services
             //var user = (await _iManager.userRepository.GetAsync()).FirstOrDefault(u => u.Email == userLoginDto.Email);
             var user = (await _iManager.userRepository.GetAsyncFull(includes: u => u.Role))
     .FirstOrDefault(u => u.Email == userLoginDto.Email);
+
+            if (user == null)
+            {
+                Console.WriteLine("User not found");
+                throw new Exception("User not found");
+            }
             Console.WriteLine($"Trying login: {userLoginDto.Email}, Pass: {userLoginDto.Password}");
             Console.WriteLine($"User found: {user != null}, Hashed: {user?.PasswordHash}");
             bool isValid = BCrypt.Net.BCrypt.Verify(userLoginDto.Password, user.PasswordHash);

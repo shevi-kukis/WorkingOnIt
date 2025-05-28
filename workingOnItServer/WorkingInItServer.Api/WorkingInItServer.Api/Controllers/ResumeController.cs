@@ -9,19 +9,21 @@ using WorkingOnIt.Core.Dtos;
 using WorkingOnIt.Core.Entities;
 using WorkingOnIt.Core.InterfaceService;
 using WorkingOnIt.Core.ModalsDto;
+using WorkingOnIt.Service.Services;
 
 
 namespace WorkingInIt.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ResumeController(IResumeService service, IHttpClientFactory httpClientFactory, JwtService tokenService,
+    public class ResumeController(IResumeService service, IHttpClientFactory httpClientFactory, JwtService tokenService,IS3Service s3Service,
     IUserService userService) : ControllerBase
     {
         private readonly JwtService _tokenService=tokenService;
         private readonly IUserService _userService=userService;
         private readonly IResumeService _service = service;
         private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
+        private readonly IS3Service _s3Service = s3Service;
         // GET: api/Resume
         [Authorize(Policy = "UserOrAdmin")]
         [HttpGet]
@@ -205,6 +207,18 @@ namespace WorkingInIt.Api.Controllers
                 return NotFound();
             return Ok(result);
         }
+
+        [HttpGet("resume/download-url/{userId}")]
+        public async Task<IActionResult> GetResumeDownloadUrl(int userId)
+        {
+            var url = await _service.GetDownloadUrlAsync(userId);
+            Console.WriteLine(url);
+            if (url == null)
+                return NotFound();
+
+            return Ok(url);
+        }
+
 
 
     }

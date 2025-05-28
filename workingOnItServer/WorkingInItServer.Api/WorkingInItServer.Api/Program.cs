@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using dotenv.net;
 using WorkingOnIt.Service.Services;
+using WorkingOnIt.Core.ModalsDto;
 
 
 
@@ -29,13 +30,22 @@ internal class Program
         string awsSecretKey = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
         string awsRegion = Environment.GetEnvironmentVariable("AWS_REGION");
         string bucketName = Environment.GetEnvironmentVariable("AWS_BUCKET_NAME");
-   
+
+        var smtpSettings = new SmtpSettings
+        {
+            Server = Environment.GetEnvironmentVariable("SMTP_SERVER"),
+            Port = int.Parse(Environment.GetEnvironmentVariable("SMTP_PORT") ?? "587"),
+            Username = Environment.GetEnvironmentVariable("SMTP_USERNAME"),
+            Password = Environment.GetEnvironmentVariable("SMTP_PASSWORD")
+        };
+
+        builder.Services.AddSingleton(smtpSettings);
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IInterviewQuestionsService, InterviewQuestionsService>();
         builder.Services.AddScoped<IInterviewService, InterviewService>();
         builder.Services.AddScoped<IResumeService, ResumeService>();
         builder.Services.AddScoped<IRoleService, RoleService>();
-
+        builder.Services.AddScoped<IEmailService, EmailService>();
         builder.Services.AddScoped<IAuthService, AuthService>();
 
         builder.Services.AddScoped<IUserRepository, UserRepository>();

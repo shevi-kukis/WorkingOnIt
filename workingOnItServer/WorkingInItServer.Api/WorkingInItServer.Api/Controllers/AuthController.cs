@@ -20,14 +20,15 @@ namespace WorkingInIt.Api.Controllers
     {
         private readonly IAuthService _service;
         private readonly IResumeService _resumeService;
-
+        private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
 
-        public AuthController(IAuthService service, IMapper mapper, IResumeService resumeService)
+        public AuthController(IAuthService service, IMapper mapper, IResumeService resumeService, IEmailService emailService)
         {
             _service = service;
             _mapper = mapper;
             _resumeService = resumeService;
+            _emailService = emailService;
         }
         [HttpPost("register")]
 public async Task<IActionResult> Register([FromBody] UserRegisterDto dto)
@@ -39,8 +40,10 @@ public async Task<IActionResult> Register([FromBody] UserRegisterDto dto)
             return BadRequest("Email already exists");
 
         var token = await _service.LoginAsync(new UserLoginDto { Email = dto.Email, Password = dto.Password });
-
-        return Ok(new { token, user });
+                var subject = "ברוכים הבאים למערכת הכנה לראיונות עבודה";
+                var body = $"שלום {user.FullName} אנחנו שמחים בהצטרפותך לאתר שלנו";
+                _emailService.SendEmailAsync(user.Email, subject, body);
+                return Ok(new { token, user });
     }
     catch (Exception ex)
     {

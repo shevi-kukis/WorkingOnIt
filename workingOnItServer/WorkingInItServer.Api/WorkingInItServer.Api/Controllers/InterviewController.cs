@@ -11,9 +11,12 @@ namespace WorkingOnIt.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class InterviewController(IInterviewService service) : ControllerBase
+    public class InterviewController(IInterviewService service, IEmailService emailService,IUserService userService) : ControllerBase
     {
         private readonly IInterviewService _service = service;
+    private readonly IEmailService _emailService= emailService;
+        private readonly IUserService _userService = userService;
+
 
         // GET: api/Interview
         [HttpGet]
@@ -72,8 +75,11 @@ namespace WorkingOnIt.Api.Controllers
                 UserId = dto.UserId,
                 Score = dto.Score
             };
-
+            var user= await _userService.GetByIdAsync(dto.UserId);
             await _service.AddAsync(interview);
+            var subject = "סיום המבחן";
+            var body = $"שלום {user.FullName} קיבלת במבחן {interview.Score}";
+            _emailService.SendEmailAsync(user.Email, subject, body);
             return Ok(interview);
         }
         [HttpGet("scores/{userId}")]

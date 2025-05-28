@@ -22,6 +22,7 @@ import {
 import { Visibility, VisibilityOff, Email, Lock, Person, Work } from "@mui/icons-material"
 import { useAuth } from "./AuthContext"
 import axiosInstance from "./axiosInstance"
+import axios from "axios"
 
 const Register = () => {
   const { dispatch } = useAuth()
@@ -115,14 +116,20 @@ const Register = () => {
       localStorage.setItem("token", response.data.token)
 
       navigate("/")
-    } catch (err) {
-      setError("Registration failed. Please try again.")
-    } finally {
+    }  catch (err) {
+      if (axios.isAxiosError(err)) {
+        const messageFromServer = err.response?.data?.message || "Registration failed. Please try again."
+        setError(messageFromServer)
+      } else {
+        setError("Something went wrong. Please try again.")
+      }
+    }
+     finally {
       setLoading(false)
     }
   }
 
-  const steps = ["Account Information", "Security", "Professional Details"]
+  const steps = ["Account Information", "Security"]
 
   return (
     <Container component="main" maxWidth="sm">
@@ -284,30 +291,7 @@ const Register = () => {
               </>
             )}
 
-            {activeStep === 2 && (
-              <>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      id="jobTitle"
-                      label="Current or Desired Job Title"
-                      name="jobTitle"
-                      value={formData.jobTitle}
-                      onChange={handleChange}
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <Work color="action" />
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                  </Grid>
-                </Grid>
-              </>
-            )}
-
+            
             <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
               <Button disabled={activeStep === 0} onClick={handleBack} variant="outlined">
                 Back

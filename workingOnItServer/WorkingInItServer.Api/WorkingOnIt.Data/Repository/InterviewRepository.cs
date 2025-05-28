@@ -22,6 +22,12 @@ namespace WorkingOnIt.Data.Repository
                 .OrderBy(i => i.InterviewDate)
                 .ToListAsync();
         }
+        public async Task<List<Interview>> GetWithUserAsync()
+        {
+            return await _dbSet
+                .Include(i => i.User)
+                .ToListAsync();
+        }
 
 
     }
