@@ -1,0 +1,49 @@
+<!-- מוצג רק אם המשתמש מחובר וגם אדמין -->
+@if (authService.isAuthenticated() && authService.isAdmin()) {
+
+  <div class="app-container">
+    <mat-toolbar class="app-toolbar">
+      <button mat-icon-button (click)="sidenav.toggle()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <img src="assets/logo.png" alt="WOW Logo" class="logo">
+      <span class="app-title">workingOnIt (wow) - Admin Dashboard</span>
+      <span class="spacer"></span>
+      <span class="admin-badge">
+    
+        Admin: {{ getCurrentUserName() }}
+      </span>
+      <button mat-button (click)="logout()">
+ 
+       Logout
+      </button>
+    </mat-toolbar>
+
+    <mat-sidenav-container class="sidenav-container">
+      <mat-sidenav #sidenav mode="side" opened class="sidenav">
+        <mat-nav-list>
+          <a mat-list-item routerLink="/dashboard" routerLinkActive="active">
+          
+            <span>Dashboard</span>
+          </a>
+          <a mat-list-item routerLink="/users" routerLinkActive="active">
+       
+            <span>User Management</span>
+          </a>
+          <a mat-list-item routerLink="/analytics" routerLinkActive="active">
+          
+            <span>Analytics</span>
+          </a>
+        </mat-nav-list>
+      </mat-sidenav>
+
+      <mat-sidenav-content class="main-content">
+        <router-outlet></router-outlet>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+  </div>
+}
+
+@else {
+  <router-outlet></router-outlet>
+}

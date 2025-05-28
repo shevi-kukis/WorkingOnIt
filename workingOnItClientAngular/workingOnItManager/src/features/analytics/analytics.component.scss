@@ -1,0 +1,89 @@
+.analytics-container {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+h1 {
+  color: #00695c;
+  margin-bottom: 30px;
+  font-size: 32px;
+  font-weight: 300;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 20px;
+}
+
+.chart-card {
+  min-height: 400px;
+}
+
+.stats-card {
+  grid-column: 1 / -1;
+}
+
+.user-select {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.no-data {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #00bcd4 0%, #00acc1 100%);
+  color: white;
+  border-radius: 8px;
+}
+
+.stat-item h3 {
+  margin: 0 0 8px 0;
+  font-size: 32px;
+  font-weight: 300;
+}
+
+.stat-item p {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* styles.scss או global styles */
+html, body {
+  height: 100%;
+  overflow: visible !important;
+}
+
+.mat-select-panel {
+  z-index: 1000 !important;
+}
+
+.user-select {
+  width: 100%;
+  margin-bottom: 20px;
+  position: relative; /* הוסף את זה */
+  z-index: 1000;       /* חיזוק נוסף */
+}
+::ng-deep .custom-panel {
+  z-index: 2000 !important;
+}

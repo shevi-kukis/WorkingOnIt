@@ -1,0 +1,83 @@
+
+<div class="analytics-container">
+  <h1>Analytics Dashboard</h1>
+
+  <div class="charts-grid">
+    <mat-card class="chart-card">
+      <mat-card-header>
+        <mat-card-title>Global User Scores</mat-card-title>
+        <mat-card-subtitle>All user performance overview</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        @if (!selectedUserId || selectedUserId === 0) {
+          <canvas baseChart
+            [data]="globalChartData"
+            [type]="globalChartType"
+            [options]="globalChartOptions">
+          </canvas>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="chart-card">
+      <mat-card-header>
+        <mat-card-title>Individual User Performance</mat-card-title>
+        <mat-card-subtitle>Select a user to view their score history</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div style="position: relative; z-index: 1000;">
+        <mat-form-field appearance="outline" class="user-select">
+          <mat-label>Select User</mat-label>
+          <mat-select panelClass="custom-panel" [(value)]="selectedUserId" (selectionChange)="onUserSelect()">
+            <mat-option [value]="0">All Users</mat-option>
+            @for (user of users; track user.id) {
+              <mat-option [value]="user.id">
+                {{ user.fullName }} ({{ user.email }})
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+        @if (selectedUserId && selectedUserId !== 0) {
+          <canvas baseChart
+            [data]="userChartData"
+            [type]="userChartType"
+            [options]="userChartOptions">
+          </canvas>
+        }
+
+        @if (!selectedUserId) {
+          <div class="no-data">
+            <p>Please select a user to view their performance chart</p>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stats-card">
+      <mat-card-header>
+        <mat-card-title>Test Statistics</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <h3>{{ totalTests }}</h3>
+            <p>Total Tests</p>
+          </div>
+          <div class="stat-item">
+            <h3>{{ averageScore }}%</h3>
+            <p>Average Score</p>
+          </div>
+          <div class="stat-item">
+            <h3>{{ highestScore }}%</h3>
+            <p>Highest Score</p>
+          </div>
+          <div class="stat-item">
+            <h3>{{ activeUsers }}</h3>
+            <p>Active Users</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

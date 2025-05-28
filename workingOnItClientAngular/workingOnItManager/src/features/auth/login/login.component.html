@@ -1,0 +1,59 @@
+<div class="login-container">
+  <mat-card class="login-card">
+    <mat-card-header>
+      <div class="header-content">
+        <img src="assets/logo.png" alt="WOW Logo" class="logo">
+        <div>
+          <mat-card-title>workingOnIt (wow)</mat-card-title>
+          <mat-card-subtitle>Admin Dashboard Login</mat-card-subtitle>
+        </div>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="admin-notice">
+        <p>Administrator access required</p>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" required>
+
+          @if (loginForm.get('email')?.hasError('required')) {
+            <mat-error>Email is required</mat-error>
+          }
+          @if (loginForm.get('email')?.hasError('email')) {
+            <mat-error>Please enter a valid email</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" required>
+          <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
+         
+          </button>
+          @if (loginForm.get('password')?.hasError('required')) {
+            <mat-error>Password is required</mat-error>
+          }
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit"
+                class="login-button" [disabled]="loginForm.invalid || isLoading">
+          @if (isLoading) {
+          
+          }
+          <span>{{ isLoading ? 'Signing in...' : 'Admin Sign In' }}</span>
+        </button>
+      </form>
+
+      @if (errorMessage) {
+        <div class="error-message">
+    
+          <span>{{ errorMessage }}</span>
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>
