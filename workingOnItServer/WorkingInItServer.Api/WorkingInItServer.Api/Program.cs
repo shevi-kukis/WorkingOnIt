@@ -87,7 +87,8 @@ internal class Program
                        "https://localhost:5173",
                     "https://workingonit.onrender.com",
                    "http://localhost:4200",
-                       "https://localhost:4200"
+                       "https://localhost:4200",
+                       "https://workingonitmanager.onrender.com"
                  )
                       .AllowAnyMethod()
                       .AllowAnyHeader()
