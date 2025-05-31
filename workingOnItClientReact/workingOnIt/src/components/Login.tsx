@@ -1,34 +1,35 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useNavigate, Link as RouterLink } from "react-router-dom"
-import {
-  Container,
-  Box,
-  Typography,
-  TextField,
-  Button,
-  Grid,
-  Link,
-  Paper,
-  InputAdornment,
-  IconButton,
-  Alert,
-  useTheme,
-} from "@mui/material"
-import { Visibility, VisibilityOff, Email, Lock } from "@mui/icons-material"
 import { useAuth } from "./AuthContext"
 import axiosInstance from "./axiosInstance"
 import axios from "axios"
+import {
+  Container,
+  Card,
+  CardContent,
+  CardHeader,
+  Typography,
+  TextField,
+  Button,
+  Alert,
+  Box,
+  Link,
+  InputAdornment,
+  IconButton,
+  Avatar,
+  useTheme,
+  CircularProgress,
+} from "@mui/material"
+import { Visibility, VisibilityOff, Email, Lock, QuestionAnswer } from "@mui/icons-material"
 
 const Login = () => {
   const { dispatch } = useAuth()
   const navigate = useNavigate()
   const theme = useTheme()
 
-  // Preserve original state and logic
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -52,8 +53,10 @@ const Login = () => {
     setLoading(true)
 
     try {
-      const response = await axiosInstance.post("/Auth/login", { email: formData.email, password: formData.password });
-      console.log("response.data", response.data);
+      const response = await axiosInstance.post("/Auth/login", {
+        email: formData.email,
+        password: formData.password,
+      })
 
       dispatch({
         type: "LOGIN",
@@ -62,62 +65,50 @@ const Login = () => {
           token: response.data.token,
           resume: response.data.resume || null,
         },
-      });
-      localStorage.setItem("token", response.data.token);
+      })
 
-      localStorage.setItem("user", JSON.stringify(response.data.user));
+      localStorage.setItem("token", response.data.token)
+      localStorage.setItem("user", JSON.stringify(response.data.user))
+
       if (response.data.resume) {
-        localStorage.setItem("resume", JSON.stringify(response.data.resume));
+        localStorage.setItem("resume", JSON.stringify(response.data.resume))
       }
+
       navigate("/")
-    }  catch (err) {
+    } catch (err) {
       if (axios.isAxiosError(err)) {
-        const messageFromServer = err.response?.data?.message || "Registration failed. Please try again."
+        const messageFromServer = err.response?.data?.message || "Login failed. Please try again."
         setError(messageFromServer)
       } else {
         setError("Something went wrong. Please try again.")
       }
-    }
-     finally {
+    } finally {
       setLoading(false)
     }
   }
 
   return (
-    <Container component="main" maxWidth="xs">
-      <Box
-        sx={{
-          marginTop: 8,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <Paper
-          elevation={2}
-          sx={{
-            p: 4,
-            width: "100%",
-            borderRadius: 2,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <Box sx={{ mb: 3, textAlign: "center" }}>
-            <img src="/logo.svg" alt="WorkingOnIt Logo" style={{ height: 60, marginBottom: 16 }} />
-            <Typography component="h1" variant="h5" color="primary" fontWeight={500}>
-              Sign in to WorkingOnIt!!!
-            </Typography>
-          </Box>
-
+    <Container
+      maxWidth="sm"
+      sx={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", py: 4 }}
+    >
+      <Card elevation={3} sx={{ width: "100%" }}>
+        <CardHeader sx={{ textAlign: "center", pb: 2 }}>
+          <Avatar sx={{ width: 80, height: 80, bgcolor: theme.palette.primary.main, mx: "auto", mb: 2 }}>
+            <QuestionAnswer sx={{ fontSize: 40 }} />
+          </Avatar>
+          <Typography variant="h4" gutterBottom>
+            Sign in to WorkingOnIt
+          </Typography>
+        </CardHeader>
+        <CardContent sx={{ px: 4, pb: 4 }}>
           {error && (
-            <Alert severity="error" sx={{ width: "100%", mb: 2 }}>
+            <Alert severity="error" sx={{ mb: 3 }}>
               {error}
             </Alert>
           )}
 
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: "100%" }}>
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
             <TextField
               margin="normal"
               required
@@ -136,6 +127,7 @@ const Login = () => {
                   </InputAdornment>
                 ),
               }}
+              sx={{ mb: 2 }}
             />
             <TextField
               margin="normal"
@@ -166,32 +158,33 @@ const Login = () => {
                   </InputAdornment>
                 ),
               }}
+              sx={{ mb: 3 }}
             />
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              color="primary"
-              sx={{ mt: 3, mb: 2 }}
+              size="large"
               disabled={loading}
+              sx={{ mb: 3, py: 1.5 }}
+              startIcon={loading ? <CircularProgress size={16} color="inherit" /> : null}
             >
               {loading ? "Signing in..." : "Sign In"}
             </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link component={RouterLink} to="#" variant="body2" color="primary">
-                  Forgot password?
+            <Box sx={{ textAlign: "center" }}>
+              <Link component={RouterLink} to="#" variant="body2" color="primary" sx={{ display: "block", mb: 1 }}>
+                Forgot password?
+              </Link>
+              <Typography variant="body2" color="text.secondary">
+                Don't have an account?{" "}
+                <Link component={RouterLink} to="/register" color="primary">
+                  Sign up here
                 </Link>
-              </Grid>
-              <Grid item>
-                <Link component={RouterLink} to="/register" variant="body2" color="primary">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
-            </Grid>
+              </Typography>
+            </Box>
           </Box>
-        </Paper>
-      </Box>
+        </CardContent>
+      </Card>
     </Container>
   )
 }

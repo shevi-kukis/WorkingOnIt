@@ -1,7 +1,7 @@
 import axios from "axios";
-// const rawBaseUrl = process.env.REACT_APP_API_BASE_URL || "";
+
 const rawBaseUrl = import.meta.env.VITE_API_BASE_URL  
-// const rawBaseUrl =process.env.REACT_APP_API_BASE_URL ||"" ;
+
 
 const axiosInstance = axios.create({
 
