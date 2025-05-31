@@ -51,39 +51,13 @@ def encode_file_to_base64(file_path):
     except json.JSONDecodeError:
         return ["שגיאה בפענוח הפלט מהמודל", response.text]
 
-# בדיקת תשובה לשאלה מול המודל
-# def check_answer_with_gamini(question, answer):
-#     prompt = f"""
-#     האם התשובה לשאלה הבאה נכונה?
-#     שאלה: {question}
-#     תשובה: {answer}
 
-#     החזר JSON: {{"correct": true/false, "score": 0-10, "correct_answer": "..." }}
-#     """
-
-#     contents = [genai.Content(role="user", parts=[genai.Part(text=prompt)])]
-#     config = genai.GenerateContentConfig(
-#         temperature=1,
-#         top_p=0.95,
-#         top_k=40,
-#         max_output_tokens=512,
-#         response_mime_type="application/json",
-#     )
-
-#     response_text = ""
-#     for chunk in genai.generate_content_stream(model=model, contents=contents, config=config):
-#         response_text += chunk.text
-#     print(response_text)
-#     try:
-#         return json.loads(response_text)
-#     except json.JSONDecodeError:
-#         return {"error": "שגיאה בפענוח תגובת המודל"}
 def check_answer_with_gamini(question, answer):
     prompt = f"""
     האם התשובה לשאלה הבאה נכונה?
     שאלה: {question}
     תשובה: {answer}
-
+שים לב להחזיר תמיד ציון אם אין לך תחזיר 0
    החזר JSON: {{"correct": true/false, "score": 0-10, "correct_answer": "..." }}
     """
     try:
@@ -109,31 +83,10 @@ def extract_score(feedback):
         return int(match.group(1)) if match else 0
     return 0
 
-# הערכת משובים כללית
-# def evaluate_feedback(feedback_list):
-#     summary_prompt = f"""
-#     בהתבסס על המשובים הבאים: {feedback_list}, תחזיר את התשובה במערך בגודל 2 של מערכים של מחרוזות.
-#     המערך הראשון: במה המשתמש טוב (נקודות חוזקה), השני: במה המשתמש צריך להשתפר (נקודות חולשה).
-#     תענה בצורה ברורה, מסודרת ומעוצבת.
-#     """
 
-#     contents = [genai.Content(role="user", parts=[genai.Part(text=summary_prompt)])]
-#     config = genai.GenerateContentConfig(
-#         temperature=1,
-#         top_p=0.95,
-#         top_k=40,
-#         max_output_tokens=512,
-#         response_mime_type="text/plain",
-#     )
-
-#     response_text = ""
-#     for chunk in genai.generate_content_stream(model=model, contents=contents, config=config):
-#         response_text += chunk.text
-
-#     return {"summary": response_text}
 def evaluate_feedback(feedback_list):
     summary_prompt = f"""
-    בהתבסס על המשובים הבאים: {feedback_list},שים לב לענות בהרחבה בהתאם למשובים איזה מקצועות המשתמש טוב בהם ואילו הוא יודע פחות , מה עליו ללמוד שוב תחזיר תשובה בפורמט הבא:
+    בהתבסס על המשובים הבאים: {feedback_list},שים לב לענות בהרחבה בהתאם למשובים איזה מקצועות המשתמש טוב בהם ואילו הוא יודע פחות למשל אם זה בתכנות והןא ידע שאלות שקשורות לריאקט ודוטנט ופחות אנגולר יהיה ככה : בחוזקות: שולט בדוטנט מצוין. שולט בריאקט 19 מצוין ובחסרונות: לא יודע לעצב בריאקט . חלש באנגולר   , מה עליו ללמוד שוב תחזיר תשובה בפורמט הבא:
     {{
         "strengths": ["נקודה חזקה 1", "נקודה חזקה 2"],
         "weaknesses": ["נקודת שיפור 1", "נקודת שיפור 2"]
