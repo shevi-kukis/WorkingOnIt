@@ -19,11 +19,10 @@ import {
   Link,
   InputAdornment,
   IconButton,
-  Avatar,
   useTheme,
   CircularProgress,
 } from "@mui/material"
-import { Visibility, VisibilityOff, Email, Lock, QuestionAnswer } from "@mui/icons-material"
+import { Visibility, VisibilityOff, Email, Lock } from "@mui/icons-material"
 
 const Login = () => {
   const { dispatch } = useAuth()
@@ -38,6 +37,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const [successMessage, setSuccessMessage] = useState("")
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -74,7 +74,12 @@ const Login = () => {
         localStorage.setItem("resume", JSON.stringify(response.data.resume))
       }
 
-      navigate("/")
+      setSuccessMessage(`Welcome back, ${response.data.user.fullName}!`)
+
+      // Navigate after showing success message
+      setTimeout(() => {
+        navigate("/")
+      }, 1500)
     } catch (err) {
       if (axios.isAxiosError(err)) {
         const messageFromServer = err.response?.data?.message || "Login failed. Please try again."
@@ -94,9 +99,9 @@ const Login = () => {
     >
       <Card elevation={3} sx={{ width: "100%" }}>
         <CardHeader sx={{ textAlign: "center", pb: 2 }}>
-          <Avatar sx={{ width: 80, height: 80, bgcolor: theme.palette.primary.main, mx: "auto", mb: 2 }}>
-            <QuestionAnswer sx={{ fontSize: 40 }} />
-          </Avatar>
+          <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+            <img src="/logo.svg" alt="WorkingOnIt Logo" style={{ height: 80 }} />
+          </Box>
           <Typography variant="h4" gutterBottom>
             Sign in to WorkingOnIt
           </Typography>
@@ -105,6 +110,12 @@ const Login = () => {
           {error && (
             <Alert severity="error" sx={{ mb: 3 }}>
               {error}
+            </Alert>
+          )}
+
+          {successMessage && (
+            <Alert severity="success" sx={{ mb: 3 }}>
+              {successMessage}
             </Alert>
           )}
 
@@ -120,6 +131,7 @@ const Login = () => {
               autoFocus
               value={formData.email}
               onChange={handleChange}
+              disabled={loading || !!successMessage}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -140,6 +152,7 @@ const Login = () => {
               autoComplete="current-password"
               value={formData.password}
               onChange={handleChange}
+              disabled={loading || !!successMessage}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -152,6 +165,7 @@ const Login = () => {
                       aria-label="toggle password visibility"
                       onClick={() => setShowPassword(!showPassword)}
                       edge="end"
+                      disabled={loading || !!successMessage}
                     >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
@@ -165,11 +179,11 @@ const Login = () => {
               fullWidth
               variant="contained"
               size="large"
-              disabled={loading}
+              disabled={loading || !!successMessage}
               sx={{ mb: 3, py: 1.5 }}
               startIcon={loading ? <CircularProgress size={16} color="inherit" /> : null}
             >
-              {loading ? "Signing in..." : "Sign In"}
+              {loading ? "Signing in..." : successMessage ? "Redirecting..." : "Sign In"}
             </Button>
             <Box sx={{ textAlign: "center" }}>
               <Link component={RouterLink} to="#" variant="body2" color="primary" sx={{ display: "block", mb: 1 }}>

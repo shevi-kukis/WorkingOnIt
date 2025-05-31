@@ -27,13 +27,16 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       {/* Top Bar */}
       <AppBar position="static" color="default" elevation={1} sx={{ backgroundColor: "white" }}>
-        <Toolbar>
-          <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleSidebar} sx={{ mr: 2 }}>
+        <Toolbar sx={{ justifyContent: "space-between" }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <img src="/logo.svg" alt="WorkingOnIt Logo" style={{ height: 32 }} />
+            <Typography variant="h6" component="div" sx={{ color: theme.palette.primary.main, fontWeight: 600 }}>
+              WorkingOnIt
+            </Typography>
+          </Box>
+          <IconButton edge="end" color="inherit" aria-label="menu" onClick={toggleSidebar}>
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: theme.palette.primary.main }}>
-            WorkingOnIt
-          </Typography>
         </Toolbar>
       </AppBar>
 

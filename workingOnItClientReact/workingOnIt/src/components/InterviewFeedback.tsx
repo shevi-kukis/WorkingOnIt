@@ -2,7 +2,8 @@
 
 import type React from "react"
 import { useEffect, useState } from "react"
-import { useSelector } from "react-redux"
+import { useSelector, useDispatch } from "react-redux"
+import { useNavigate } from "react-router-dom"
 import {
   Container,
   Box,
@@ -21,10 +22,22 @@ import {
   Avatar,
   useTheme,
 } from "@mui/material"
-import { CheckCircle, Cancel, ExpandMore, ExpandLess, EmojiEvents, TrendingUp, Warning } from "@mui/icons-material"
+import {
+  CheckCircle,
+  Cancel,
+  ExpandMore,
+  ExpandLess,
+  EmojiEvents,
+  TrendingUp,
+  Warning,
+  PlayArrow,
+} from "@mui/icons-material"
+import { resetInterview } from "../store/interviewSlice"
 
 const InterviewFeedback: React.FC = () => {
   const theme = useTheme()
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
   const feedbacks = useSelector((state: any) => state.interview.feedbacks)
   const questions = useSelector((state: any) => state.interview.questions)
   const summary = useSelector((state: any) => state.interview.summary)
@@ -33,6 +46,11 @@ const InterviewFeedback: React.FC = () => {
 
   const toggleFeedback = (index: number) => {
     setOpenIndexes((prev) => (prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]))
+  }
+
+  const handleStartNewInterview = () => {
+    dispatch(resetInterview())
+    navigate("/interview")
   }
 
   useEffect(() => {
@@ -71,6 +89,15 @@ const InterviewFeedback: React.FC = () => {
         <Typography variant="h3" gutterBottom>
           Interview Complete
         </Typography>
+        <Button
+          variant="contained"
+          size="large"
+          startIcon={<PlayArrow />}
+          onClick={handleStartNewInterview}
+          sx={{ mt: 2, px: 4, py: 1.5 }}
+        >
+          Start New Interview
+        </Button>
       </Box>
 
       {/* Score Card */}

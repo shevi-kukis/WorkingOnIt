@@ -17,22 +17,26 @@ import {
   useTheme,
   CircularProgress,
   Backdrop,
+  Alert,
 } from "@mui/material"
-import { Send, PlayArrow, QuestionAnswer, Person } from "@mui/icons-material"
+import { Send, PlayArrow, Upload } from "@mui/icons-material"
 import { useAuth } from "./AuthContext"
 import { checkAnswer, nextQuestion, uploadResume, evaluateResponses, resetInterview } from "../store/interviewSlice"
 import type { StoreType } from "../store/store"
 import InterviewFeedback from "./InterviewFeedback"
 import axiosInstance from "./axiosInstance"
+import { useNavigate } from "react-router-dom"
 
 const Interview = () => {
   const dispatch = useDispatch()
   const theme = useTheme()
   const { state } = useAuth()
+  const navigate = useNavigate()
 
   const [answer, setAnswer] = useState("")
   const [interviewStarted, setInterviewStarted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isLoadingQuestions, setIsLoadingQuestions] = useState(false)
 
   const questions = useSelector((state: StoreType) => state.interview.questions)
   const currentQuestionIndex = useSelector((state: StoreType) => state.interview.currentQuestionIndex)
@@ -68,7 +72,10 @@ const Interview = () => {
   useEffect(() => {
     if (resumeFilePath && interviewStarted) {
       console.log("📄 resumeFilePath sent to server:", resumeFilePath)
-      dispatch(uploadResume(resumeFilePath))
+      setIsLoadingQuestions(true)
+      dispatch(uploadResume(resumeFilePath)).finally(() => {
+        setIsLoadingQuestions(false)
+      })
     }
   }, [resumeFilePath, interviewStarted, dispatch])
 
@@ -102,9 +109,18 @@ const Interview = () => {
   }
 
   const startInterview = () => {
+    // Check if user has uploaded a resume
+    if (!resumeFilePath) {
+      return // Don't start interview without resume
+    }
+
     hasSubmittedScore.current = false
     dispatch(resetInterview())
     setInterviewStarted(true)
+  }
+
+  const handleUploadResume = () => {
+    navigate("/uploadResume")
   }
 
   if (isFinished) {
@@ -117,10 +133,13 @@ const Interview = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isSubmitting}>
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isSubmitting || isLoadingQuestions}
+      >
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
           <CircularProgress color="inherit" />
-          <Typography>Processing your answer...</Typography>
+          <Typography>{isLoadingQuestions ? "Loading interview questions..." : "Processing your answer..."}</Typography>
         </Box>
       </Backdrop>
 
@@ -129,27 +148,50 @@ const Interview = () => {
           <Card sx={{ maxWidth: 500, width: "100%", textAlign: "center" }}>
             <CardHeader>
               <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
-                <Avatar sx={{ width: 80, height: 80, bgcolor: theme.palette.primary.main }}>
-                  <QuestionAnswer sx={{ fontSize: 40 }} />
-                </Avatar>
+                <img src="/logo.svg" alt="WorkingOnIt Logo" style={{ height: 80 }} />
               </Box>
               <Typography variant="h4" color="primary" gutterBottom>
                 Interview Simulation
               </Typography>
             </CardHeader>
             <CardContent sx={{ pb: 4 }}>
-              <Typography variant="body1" paragraph color="text.secondary">
-                Click the button below to start your interview:
-              </Typography>
-              <Button
-                variant="contained"
-                size="large"
-                startIcon={<PlayArrow />}
-                onClick={startInterview}
-                sx={{ mt: 2, px: 4, py: 1.5 }}
-              >
-                Start Interview
-              </Button>
+              {!resumeFilePath ? (
+                <>
+                  <Alert severity="warning" sx={{ mb: 3, textAlign: "left" }}>
+                    <Typography variant="subtitle2" gutterBottom>
+                      Resume Required
+                    </Typography>
+                    <Typography variant="body2">
+                      You need to upload your resume before starting the interview. This helps us generate personalized
+                      questions for you.
+                    </Typography>
+                  </Alert>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    startIcon={<Upload />}
+                    onClick={handleUploadResume}
+                    sx={{ mt: 2, px: 4, py: 1.5 }}
+                  >
+                    Upload Resume First
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Typography variant="body1" paragraph color="text.secondary">
+                    Click the button below to start your interview:
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    startIcon={<PlayArrow />}
+                    onClick={startInterview}
+                    sx={{ mt: 2, px: 4, py: 1.5 }}
+                  >
+                    Start Interview
+                  </Button>
+                </>
+              )}
             </CardContent>
           </Card>
         </Box>
@@ -159,7 +201,7 @@ const Interview = () => {
           <Paper elevation={2} sx={{ p: 3, mb: 3, borderRadius: 2 }}>
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                <QuestionAnswer color="primary" />
+                <img src="/logo.svg" alt="WorkingOnIt Logo" style={{ height: 24 }} />
                 <Typography variant="h6" color="primary">
                   Job Interview
                 </Typography>
@@ -176,9 +218,7 @@ const Interview = () => {
           <Box sx={{ mb: 3 }}>
             {/* Interviewer Message */}
             <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
-              <Avatar sx={{ bgcolor: theme.palette.grey[300] }}>
-                <QuestionAnswer />
-              </Avatar>
+              <Avatar sx={{ bgcolor: theme.palette.grey[400], color: "white", fontWeight: 600 }}>I</Avatar>
               <Box sx={{ flex: 1 }}>
                 <Paper
                   elevation={1}
@@ -199,8 +239,8 @@ const Interview = () => {
 
             {/* User Input */}
             <Box sx={{ display: "flex", gap: 2 }}>
-              <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
-                <Person />
+              <Avatar sx={{ bgcolor: theme.palette.primary.main, fontWeight: 600 }}>
+                {state.user?.fullName?.charAt(0) || "U"}
               </Avatar>
               <Box sx={{ flex: 1 }}>
                 <Paper elevation={1} sx={{ p: 3, borderRadius: 2, borderTopLeftRadius: 0 }}>
@@ -213,14 +253,14 @@ const Interview = () => {
                     onChange={(e) => setAnswer(e.target.value)}
                     variant="outlined"
                     sx={{ mb: 2 }}
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || isLoadingQuestions}
                   />
                   <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <Button
                       variant="contained"
                       endIcon={isSubmitting ? <CircularProgress size={16} color="inherit" /> : <Send />}
                       onClick={handleSubmitAnswer}
-                      disabled={!answer.trim() || isSubmitting}
+                      disabled={!answer.trim() || isSubmitting || isLoadingQuestions}
                     >
                       {isSubmitting ? "Submitting..." : "Send Answer"}
                     </Button>

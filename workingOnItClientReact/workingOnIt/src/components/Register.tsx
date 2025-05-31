@@ -21,10 +21,9 @@ import {
   Step,
   StepLabel,
   useTheme,
-  Avatar,
   CircularProgress,
 } from "@mui/material"
-import { Visibility, VisibilityOff, Email, Lock, Person, QuestionAnswer } from "@mui/icons-material"
+import { Visibility, VisibilityOff, Email, Lock, Person } from "@mui/icons-material"
 import { useAuth } from "./AuthContext"
 import axiosInstance from "./axiosInstance"
 import axios from "axios"
@@ -46,6 +45,7 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const [successMessage, setSuccessMessage] = useState("")
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -118,7 +118,15 @@ const Register = () => {
       })
       localStorage.setItem("token", response.data.token)
 
-      navigate("/")
+      setSuccessMessage(`Account created successfully! Welcome to WorkingOnIt, ${formData.firstName}!`)
+
+      // Store welcome message for home page
+      localStorage.setItem("welcomeMessage", `Welcome to WorkingOnIt, ${formData.firstName}!`)
+
+      // Navigate after showing success message
+      setTimeout(() => {
+        navigate("/")
+      }, 2000)
     } catch (err) {
       if (axios.isAxiosError(err)) {
         const messageFromServer = err.response?.data?.message || "Registration failed. Please try again."
@@ -134,32 +142,40 @@ const Register = () => {
   const steps = ["Account Information", "Security"]
 
   return (
-    <Container component="main" maxWidth="sm">
-      <Box
-        sx={{
-          marginTop: 8,
-          marginBottom: 8,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <Card elevation={3} sx={{ width: "100%" }}>
-          <CardHeader sx={{ textAlign: "center", pb: 2 }}>
-            <Avatar sx={{ width: 80, height: 80, bgcolor: theme.palette.primary.main, mx: "auto", mb: 2 }}>
-              <QuestionAnswer sx={{ fontSize: 40 }} />
-            </Avatar>
-            <Typography variant="h4" gutterBottom>
-              Create Your Account
-            </Typography>
-          </CardHeader>
-          <CardContent sx={{ px: 4, pb: 4 }}>
-            {error && (
-              <Alert severity="error" sx={{ width: "100%", mb: 2 }}>
-                {error}
-              </Alert>
-            )}
+    <Container
+      component="main"
+      maxWidth="sm"
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: "100vh",
+        py: 4,
+      }}
+    >
+      <Card elevation={3} sx={{ width: "100%" }}>
+        <CardHeader sx={{ textAlign: "center", pb: 2 }}>
+          <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+            <img src="/logo.svg" alt="WorkingOnIt Logo" style={{ height: 80 }} />
+          </Box>
+          <Typography variant="h4" gutterBottom>
+            Create Your Account
+          </Typography>
+        </CardHeader>
+        <CardContent sx={{ px: 4, pb: 4 }}>
+          {error && (
+            <Alert severity="error" sx={{ width: "100%", mb: 2 }}>
+              {error}
+            </Alert>
+          )}
 
+          {successMessage && (
+            <Alert severity="success" sx={{ width: "100%", mb: 2 }}>
+              {successMessage}
+            </Alert>
+          )}
+
+          {!successMessage && (
             <Stepper activeStep={activeStep} sx={{ width: "100%", mb: 4 }}>
               {steps.map((label) => (
                 <Step key={label}>
@@ -167,124 +183,126 @@ const Register = () => {
                 </Step>
               ))}
             </Stepper>
+          )}
 
-            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: "100%" }}>
-              {activeStep === 0 && (
-                <>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        autoComplete="given-name"
-                        name="firstName"
-                        required
-                        fullWidth
-                        id="firstName"
-                        label="First Name"
-                        autoFocus
-                        value={formData.firstName}
-                        onChange={handleChange}
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <Person color="action" />
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        required
-                        fullWidth
-                        id="lastName"
-                        label="Last Name"
-                        name="lastName"
-                        autoComplete="family-name"
-                        value={formData.lastName}
-                        onChange={handleChange}
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        required
-                        fullWidth
-                        id="email"
-                        label="Email Address"
-                        name="email"
-                        autoComplete="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <Email color="action" />
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                    </Grid>
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: "100%" }}>
+            {!successMessage && activeStep === 0 && (
+              <>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      autoComplete="given-name"
+                      name="firstName"
+                      required
+                      fullWidth
+                      id="firstName"
+                      label="First Name"
+                      autoFocus
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <Person color="action" />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
                   </Grid>
-                </>
-              )}
-
-              {activeStep === 1 && (
-                <>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                      <TextField
-                        required
-                        fullWidth
-                        name="password"
-                        label="Password"
-                        type={showPassword ? "text" : "password"}
-                        id="password"
-                        autoComplete="new-password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <Lock color="action" />
-                            </InputAdornment>
-                          ),
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <IconButton
-                                aria-label="toggle password visibility"
-                                onClick={() => setShowPassword(!showPassword)}
-                                edge="end"
-                              >
-                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                              </IconButton>
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        required
-                        fullWidth
-                        name="confirmPassword"
-                        label="Confirm Password"
-                        type={showPassword ? "text" : "password"}
-                        id="confirmPassword"
-                        autoComplete="new-password"
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <Lock color="action" />
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                    </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      required
+                      fullWidth
+                      id="lastName"
+                      label="Last Name"
+                      name="lastName"
+                      autoComplete="family-name"
+                      value={formData.lastName}
+                      onChange={handleChange}
+                    />
                   </Grid>
-                </>
-              )}
+                  <Grid item xs={12}>
+                    <TextField
+                      required
+                      fullWidth
+                      id="email"
+                      label="Email Address"
+                      name="email"
+                      autoComplete="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <Email color="action" />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Grid>
+                </Grid>
+              </>
+            )}
 
+            {!successMessage && activeStep === 1 && (
+              <>
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <TextField
+                      required
+                      fullWidth
+                      name="password"
+                      label="Password"
+                      type={showPassword ? "text" : "password"}
+                      id="password"
+                      autoComplete="new-password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <Lock color="action" />
+                          </InputAdornment>
+                        ),
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              aria-label="toggle password visibility"
+                              onClick={() => setShowPassword(!showPassword)}
+                              edge="end"
+                            >
+                              {showPassword ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      required
+                      fullWidth
+                      name="confirmPassword"
+                      label="Confirm Password"
+                      type={showPassword ? "text" : "password"}
+                      id="confirmPassword"
+                      autoComplete="new-password"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <Lock color="action" />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Grid>
+                </Grid>
+              </>
+            )}
+
+            {!successMessage && (
               <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
                 <Button disabled={activeStep === 0} onClick={handleBack} variant="outlined">
                   Back
@@ -307,7 +325,9 @@ const Register = () => {
                   )}
                 </Box>
               </Box>
+            )}
 
+            {!successMessage && (
               <Grid container justifyContent="flex-end" sx={{ mt: 2 }}>
                 <Grid item>
                   <Link component={RouterLink} to="/login" variant="body2" color="primary">
@@ -315,10 +335,10 @@ const Register = () => {
                   </Link>
                 </Grid>
               </Grid>
-            </Box>
-          </CardContent>
-        </Card>
-      </Box>
+            )}
+          </Box>
+        </CardContent>
+      </Card>
     </Container>
   )
 }

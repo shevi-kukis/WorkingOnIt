@@ -133,7 +133,7 @@ def extract_score(feedback):
 #     return {"summary": response_text}
 def evaluate_feedback(feedback_list):
     summary_prompt = f"""
-    בהתבסס על המשובים הבאים: {feedback_list}, תחזיר תשובה בפורמט הבא:
+    בהתבסס על המשובים הבאים: {feedback_list},שים לב לענות בהרחבה בהתאם למשובים איזה מקצועות המשתמש טוב בהם ואילו הוא יודע פחות , מה עליו ללמוד שוב תחזיר תשובה בפורמט הבא:
     {{
         "strengths": ["נקודה חזקה 1", "נקודה חזקה 2"],
         "weaknesses": ["נקודת שיפור 1", "נקודת שיפור 2"]

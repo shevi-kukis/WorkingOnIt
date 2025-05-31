@@ -14,6 +14,7 @@ import {
   Collapse,
   useTheme,
   IconButton,
+  Avatar,
 } from "@mui/material"
 import {
   Home,
@@ -29,7 +30,6 @@ import {
 } from "@mui/icons-material"
 import { useAuth } from "./AuthContext"
 
-
 interface AppSidebarProps {
   open: boolean
   onClose: () => void
@@ -43,11 +43,13 @@ const menuItems = [
         title: "Home",
         url: "/",
         icon: Home,
+        requiresAuth: false, // Allow everyone to see home
       },
       {
         title: "Interview Tips",
         url: "/interview-tips",
         icon: MenuBook,
+        requiresAuth: false, // Allow everyone to see interview tips
       },
     ],
   },
@@ -99,6 +101,7 @@ export function AppSidebar({ open, onClose }: AppSidebarProps) {
     localStorage.removeItem("user")
     localStorage.removeItem("resume")
     localStorage.removeItem("interview")
+    localStorage.removeItem("welcomeMessage")
     navigate("/login")
     onClose()
   }
@@ -127,27 +130,25 @@ export function AppSidebar({ open, onClose }: AppSidebarProps) {
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", cursor: "pointer" }} onClick={() => handleNavigation("/")}>
-          <Box
+          <Avatar
             sx={{
               width: 40,
               height: 40,
-              borderRadius: 2,
               bgcolor: theme.palette.primary.main,
               color: "white",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
               mr: 2,
+              fontSize: "1.2rem",
+              fontWeight: 600,
             }}
           >
-            <QuestionAnswer />
-          </Box>
+            {state.user?.fullName?.charAt(0) || "G"}
+          </Avatar>
           <Box>
             <Typography variant="h6" fontWeight={600}>
               WorkingOnIt
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              Interview Practice
+              {state.user?.fullName || "Guest"}
             </Typography>
           </Box>
         </Box>
@@ -174,7 +175,7 @@ export function AppSidebar({ open, onClose }: AppSidebarProps) {
             <Collapse in={expandedSections.includes(section.title)} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
                 {section.items
-                  .filter((item) => !item || state.token)
+                  .filter((item) => !item.requiresAuth || state.token)
                   .map((item) => (
                     <ListItem key={item.title} disablePadding>
                       <ListItemButton sx={{ pl: 4 }} onClick={() => handleNavigation(item.url)}>
@@ -203,14 +204,24 @@ export function AppSidebar({ open, onClose }: AppSidebarProps) {
             </ListItemButton>
           </ListItem>
         ) : (
-          <ListItem disablePadding>
-            <ListItemButton onClick={() => handleNavigation("/login")} sx={{ px: 2 }}>
-              <ListItemIcon sx={{ minWidth: 40 }}>
-                <Person fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary="Login" />
-            </ListItemButton>
-          </ListItem>
+          <>
+            <ListItem disablePadding>
+              <ListItemButton onClick={() => handleNavigation("/login")} sx={{ px: 2 }}>
+                <ListItemIcon sx={{ minWidth: 40 }}>
+                  <Person fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary="Sign In" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton onClick={() => handleNavigation("/register")} sx={{ px: 2 }}>
+                <ListItemIcon sx={{ minWidth: 40 }}>
+                  <Person fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary="Sign Up" />
+              </ListItemButton>
+            </ListItem>
+          </>
         )}
       </List>
     </Box>
