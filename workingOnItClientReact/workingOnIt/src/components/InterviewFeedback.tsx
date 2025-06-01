@@ -74,8 +74,8 @@ const InterviewFeedback: React.FC = () => {
   }
 
   const FinalMark = (feedbacks: any[]) => {
-    return feedbacks.reduce((total, item) => total + item.score, 0)
-  }
+    return feedbacks.reduce((total, item) => total + (item.score !== undefined ? item.score : 0), 0);
+}
 
   const finalScore = FinalMark(feedbacks)
 
@@ -89,7 +89,7 @@ const InterviewFeedback: React.FC = () => {
         <Typography variant="h3" gutterBottom>
           Interview Complete
         </Typography>
-        <Button
+        {/* <Button
           variant="contained"
           size="large"
           startIcon={<PlayArrow />}
@@ -97,7 +97,7 @@ const InterviewFeedback: React.FC = () => {
           sx={{ mt: 2, px: 4, py: 1.5 }}
         >
           Start New Interview
-        </Button>
+        </Button> */}
       </Box>
 
       {/* Score Card */}

@@ -125,7 +125,7 @@ const UpLoadResume = () => {
                 Click to upload or drag and drop
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                PDF, DOC, DOCX files supported
+                PDF  files supported
               </Typography>
             </Paper>
 
