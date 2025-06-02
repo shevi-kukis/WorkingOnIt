@@ -54,6 +54,7 @@ const Interview = () => {
     const saveScore = async () => {
       if (interviewStarted && isFinished && state.user?.id && feedbacks.length > 0 && !hasSubmittedScore.current) {
         try {
+          console.log("Saving interview score:", totalScore)
           await axiosInstance.post("/Interview/submit", {
             userId: state.user.id,
             score: totalScore,
