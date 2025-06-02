@@ -47,7 +47,7 @@ const Interview = () => {
   let summary = useSelector((state: StoreType) => state.interview.summary as unknown as string[][])
 
   const resumeFilePath = state.resume?.filePath
-  const totalScore = feedbacks.reduce((total, item) => total + item.score, 0)
+  const totalScore = feedbacks.reduce((total, item) => total + (item.score !== undefined ? item.score : 0), 0);
   const hasSubmittedScore = useRef(false)
 
   useEffect(() => {
