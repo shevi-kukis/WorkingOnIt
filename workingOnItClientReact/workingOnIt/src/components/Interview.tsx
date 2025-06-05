@@ -62,7 +62,7 @@ const Interview = () => {
           console.log("Saving interview score:", totalScore)
           await axiosInstance.post("/Interview/submit", {
             userId: state.user.id,
-            score: feedbacks.reduce((total, item) => total + (item.score != undefined ? item.score : 0), 0),
+            score: feedbacks.reduce((total, item) => total + ((item.score>=0&&item.score<=10)? item.score : 0), 0),
 
           })
           console.log("Interview score saved")
