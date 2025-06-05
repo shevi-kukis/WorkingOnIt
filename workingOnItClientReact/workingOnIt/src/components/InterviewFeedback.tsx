@@ -74,8 +74,12 @@ const InterviewFeedback: React.FC = () => {
   }
 
   const FinalMark = (feedbacks: any[]) => {
-    return feedbacks.reduce((total, item) => total + (item.score !== undefined ? item.score : 0), 0);
-}
+    return feedbacks.reduce((total, item) => {
+      const score = Number(item.score);
+      return total + (isNaN(score) ? 0 : score);
+    }, 0);
+  }
+  
 
   const finalScore = FinalMark(feedbacks)
 

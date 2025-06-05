@@ -63,6 +63,7 @@ const Interview = () => {
           await axiosInstance.post("/Interview/submit", {
             userId: state.user.id,
             score: feedbacks.reduce((total, item) => total + (item.score !== undefined ? item.score : 0), 0),
+
           })
           console.log("Interview score saved")
           hasSubmittedScore.current = true
@@ -148,7 +149,7 @@ const Interview = () => {
           <Typography>{isLoadingQuestions ? "Loading interview questions..." : "Processing your answer..."}</Typography>
         </Box>
       </Backdrop>
-
+  
       {!interviewStarted ? (
         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "60vh" }}>
           <Card sx={{ maxWidth: 500, width: "100%", textAlign: "center" }}>
