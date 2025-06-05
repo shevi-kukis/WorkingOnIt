@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using WorkingOnIt.Core.Dtos;
@@ -177,7 +178,16 @@ namespace WorkingInIt.Api.Controllers
             };
 
             var pythonApiUrl = $"{Environment.GetEnvironmentVariable("PYTHON_API")}/upload_resume";
-
+            // שלב 1: פינג
+            try
+            {
+                await client.GetAsync($"{pythonApiUrl}/ping");
+                await Task.Delay(1500); // המתנה קטנה, ליתר ביטחון
+            }
+            catch (Exception ex)
+            {
+                // אפשר להתעלם או לרשום בלוג
+            }
             Console.WriteLine(pythonApiUrl);
             try
             {

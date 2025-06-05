@@ -40,9 +40,9 @@ public async Task<IActionResult> Register([FromBody] UserRegisterDto dto)
             return BadRequest("Email already exists");
 
         var token = await _service.LoginAsync(new UserLoginDto { Email = dto.Email, Password = dto.Password });
-                var subject = "ברוכים הבאים למערכת הכנה לראיונות עבודה";
-                var body = $"שלום {user.FullName} אנחנו שמחים בהצטרפותך לאתר שלנו";
-                _emailService.SendEmailAsync(user.Email, subject, body);
+                //var subject = "ברוכים הבאים למערכת הכנה לראיונות עבודה";
+                //var body = $"שלום {user.FullName} אנחנו שמחים בהצטרפותך לאתר שלנו";
+                //_emailService.SendEmailAsync(user.Email, subject, body);
                 return Ok(new { token, user });
     }
     catch (Exception ex)

@@ -77,9 +77,9 @@ namespace WorkingOnIt.Api.Controllers
             };
             var user= await _userService.GetByIdAsync(dto.UserId);
             await _service.AddAsync(interview);
-            var subject = "סיום המבחן";
-            var body = $"שלום {user.FullName} קיבלת במבחן {interview.Score}";
-            _emailService.SendEmailAsync(user.Email, subject, body);
+            //var subject = "סיום המבחן";
+            //var body = $"שלום {user.FullName} קיבלת במבחן {interview.Score}";
+            //_emailService.SendEmailAsync(user.Email, subject, body);
             return Ok(interview);
         }
         [HttpGet("scores/{userId}")]

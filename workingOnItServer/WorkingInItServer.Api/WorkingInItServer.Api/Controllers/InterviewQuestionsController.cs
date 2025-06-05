@@ -71,7 +71,15 @@ namespace WorkingInIt.Api.Controllers
                 feedback_list = request.Feedback_List
             };
             var pythonApiUrl = Environment.GetEnvironmentVariable("PYTHON_API");
-
+            try
+            {
+                await client.GetAsync($"{pythonApiUrl}/ping");
+                await Task.Delay(1500); // המתנה קטנה, ליתר ביטחון
+            }
+            catch (Exception ex)
+            {
+                // אפשר להתעלם או לרשום בלוג
+            }
             var response = await client.PostAsJsonAsync(pythonApiUrl + "/evaluate_responses", payload);
             if (!response.IsSuccessStatusCode)
             {
@@ -99,7 +107,15 @@ namespace WorkingInIt.Api.Controllers
                 answer = request.Answer
             };
             var pythonApiUrl = Environment.GetEnvironmentVariable("PYTHON_API");
-
+            try
+            {
+                await client.GetAsync($"{pythonApiUrl}/ping");
+                await Task.Delay(1500); // המתנה קטנה, ליתר ביטחון
+            }
+            catch (Exception ex)
+            {
+                // אפשר להתעלם או לרשום בלוג
+            }
             var response = await client.PostAsJsonAsync($"{pythonApiUrl}/check_answer", payload);
             if (!response.IsSuccessStatusCode)
             {
