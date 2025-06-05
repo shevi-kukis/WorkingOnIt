@@ -1,14 +1,22 @@
-import { Component, inject } from "@angular/core"
+import { Component, Inject,  OnInit } from "@angular/core"
 import { CommonModule } from "@angular/common"
-import { FormBuilder, type FormGroup, Validators, ReactiveFormsModule } from "@angular/forms"
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog"
+import { FormBuilder,  FormGroup, Validators, ReactiveFormsModule } from "@angular/forms"
+import {  MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog"
 import { MatFormFieldModule } from "@angular/material/form-field"
 import { MatInputModule } from "@angular/material/input"
 import { MatSelectModule } from "@angular/material/select"
 import { MatButtonModule } from "@angular/material/button"
-import { MatSnackBar } from "@angular/material/snack-bar"
-import { UserService } from "../../../core/services/user.service"
-import { User } from "../../../core/models/user.model"
+import { MatIconModule } from "@angular/material/icon"
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner"
+import { MatDialogModule } from "@angular/material/dialog" // Added import for MatDialogModule
+
+export interface User {
+  id?: number
+  fullName: string
+  email: string
+  password?: string
+  roleId: number
+}
 
 @Component({
   selector: "app-user-dialog",
@@ -21,65 +29,76 @@ import { User } from "../../../core/models/user.model"
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: "./user-dialog.component.html",
   styleUrls: ["./user-dialog.component.scss"],
 })
-export class UserDialogComponent {
-  private fb = inject(FormBuilder)
-  private userService = inject(UserService)
-  private snackBar = inject(MatSnackBar)
-  private dialogRef = inject(MatDialogRef<UserDialogComponent>)
-  private data = inject<User | null>(MAT_DIALOG_DATA)
-
-  isEdit = !!this.data
+export class UserDialogComponent implements OnInit {
+  userForm: FormGroup
+  isEdit: boolean
   isLoading = false
+  data: { user?: User; isEdit: boolean }
 
-  userForm: FormGroup = this.fb.group({
-    fullName: [this.data?.fullName || "", Validators.required],
-    email: [this.data?.email || "", [Validators.required, Validators.email]],
-    password: ["", this.isEdit ? [] : [Validators.required, Validators.minLength(6)]],
-    roleId: [this.data?.roleId || 2, Validators.required],
-  })
+  constructor(
+    private fb: FormBuilder,
+    private dialogRef: MatDialogRef<UserDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) matDialogData: any, // Injected MAT_DIALOG_DATA correctly
+  ) {
+    this.data = matDialogData
+    this.isEdit = this.data.isEdit
+    this.userForm = this.createForm()
+  }
 
-  onSave() {
-    if (this.userForm.valid) {
-      this.isLoading = true
-
-      if (this.isEdit && this.data) {
-        const updateData = {
-          id: this.data.id,
-          fullName: this.userForm.value.fullName,
-          email: this.userForm.value.email,
-          roleId: this.userForm.value.roleId,
-        }
-
-        this.userService.updateUser(updateData).subscribe({
-          next: () => {
-            this.snackBar.open("User updated successfully", "Close", { duration: 3000 })
-            this.dialogRef.close(true)
-          },
-          error: () => {
-            this.snackBar.open("Error updating user", "Close", { duration: 3000 })
-            this.isLoading = false
-          },
-        })
-      } else {
-        this.userService.createUser(this.userForm.value).subscribe({
-          next: () => {
-            this.snackBar.open("User created successfully", "Close", { duration: 3000 })
-            this.dialogRef.close(true)
-          },
-          error: () => {
-            this.snackBar.open("Error creating user", "Close", { duration: 3000 })
-            this.isLoading = false
-          },
-        })
-      }
+  ngOnInit(): void {
+    if (this.isEdit && this.data.user) {
+      this.userForm.patchValue(this.data.user)
     }
   }
 
-  onCancel() {
-    this.dialogRef.close(false)
+  private createForm(): FormGroup {
+    const form = this.fb.group({
+      fullName: ["", [Validators.required, Validators.minLength(2)]],
+      email: ["", [Validators.required, Validators.email]],
+      roleId: ["", Validators.required],
+    })
+
+    if (!this.isEdit) {
+      form.addControl("password", this.fb.control("", [Validators.required, Validators.minLength(6)]))
+    }
+
+    return form
+  }
+
+  onSave(): void {
+    if (this.userForm.valid) {
+      this.isLoading = true
+
+      // Simulate API call
+      setTimeout(() => {
+        this.dialogRef.close(this.userForm.value)
+        this.isLoading = false
+      }, 1000)
+    }
+  }
+
+  onCancel(): void {
+    this.dialogRef.close()
+  }
+
+  getErrorMessage(fieldName: string): string {
+    const field = this.userForm.get(fieldName)
+    if (field?.hasError("required")) {
+      return `${fieldName} is required`
+    }
+    if (field?.hasError("email")) {
+      return "Please enter a valid email"
+    }
+    if (field?.hasError("minlength")) {
+      const minLength = field.errors?.["minlength"].requiredLength
+      return `Minimum ${minLength} characters required`
+    }
+    return ""
   }
 }

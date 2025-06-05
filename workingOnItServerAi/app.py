@@ -60,3 +60,6 @@ def evaluate_responses():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route("/ping")
+def ping():
+    return "pong", 200
