@@ -1,6 +1,18 @@
-
 <div class="analytics-container">
   <h1>Analytics Dashboard</h1>
+
+  <!-- השדה לבחירת משתמש ממוקם מעל הקומפוננטות -->
+  <mat-form-field appearance="outline" class="user-select">
+    <mat-label>Select User</mat-label>
+    <mat-select panelClass="custom-panel" [(value)]="selectedUserId" (selectionChange)="onUserSelect()">
+      <mat-option [value]="0">All Users</mat-option>
+      @for (user of users; track user.id) {
+        <mat-option [value]="user.id">
+          {{ user.fullName }} ({{ user.email }})
+        </mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
 
   <div class="charts-grid">
     <mat-card class="chart-card">
@@ -25,19 +37,6 @@
         <mat-card-subtitle>Select a user to view their score history</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        <div style="position: relative; z-index: 1000;">
-        <mat-form-field appearance="outline" class="user-select">
-          <mat-label>Select User</mat-label>
-          <mat-select panelClass="custom-panel" [(value)]="selectedUserId" (selectionChange)="onUserSelect()">
-            <mat-option [value]="0">All Users</mat-option>
-            @for (user of users; track user.id) {
-              <mat-option [value]="user.id">
-                {{ user.fullName }} ({{ user.email }})
-              </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-      </div>
         @if (selectedUserId && selectedUserId !== 0) {
           <canvas baseChart
             [data]="userChartData"

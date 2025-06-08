@@ -71,7 +71,7 @@ h1 {
 /* styles.scss או global styles */
 html, body {
   height: 100%;
-  overflow: visible !important;
+ 
 }
 
 .mat-select-panel {
@@ -86,4 +86,14 @@ html, body {
 }
 ::ng-deep .custom-panel {
   z-index: 2000 !important;
+}
+::ng-deep .mat-select-panel {
+  max-height: 300px !important;
+  overflow: auto !important;
+  z-index: 2000 !important;
+}
+::ng-deep .cdk-overlay-pane {
+  z-index: 2000 !important;
+  max-height: 300px !important;
+  overflow-y: auto !important;
 }

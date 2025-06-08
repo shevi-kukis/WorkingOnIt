@@ -177,7 +177,7 @@ namespace WorkingInIt.Api.Controllers
                 filePath = request.FilePath
             };
 
-            var pythonApiUrl = $"{Environment.GetEnvironmentVariable("PYTHON_API")}/upload_resume";
+            var pythonApiUrl = $"{Environment.GetEnvironmentVariable("PYTHON_API")}";
             // שלב 1: פינג
             try
             {
@@ -191,7 +191,8 @@ namespace WorkingInIt.Api.Controllers
             Console.WriteLine(pythonApiUrl);
             try
             {
-                var response = await client.PostAsJsonAsync(pythonApiUrl, payload);
+     
+                var response = await client.PostAsJsonAsync($"{pythonApiUrl}/upload_resume", payload);
 
                 if (!response.IsSuccessStatusCode)
                 {
