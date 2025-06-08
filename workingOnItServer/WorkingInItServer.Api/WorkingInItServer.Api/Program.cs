@@ -17,6 +17,31 @@ using WorkingOnIt.Core.ModalsDto;
 
 internal class Program
 {
+    static void StartKeepAlivePing()
+    {
+        var httpClient = new HttpClient();
+
+        var timer = new System.Timers.Timer(300000); // כל 5 דקות (300,000 מ"ש)
+       
+        var pythonApiUrl = $"{Environment.GetEnvironmentVariable("PYTHON_API")}";
+
+        timer.Elapsed += async (sender, e) =>
+        {
+            try
+            {
+                await httpClient.GetAsync($"{pythonApiUrl}/ping");
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ping failed: {ex.Message}");
+            }
+        };
+
+        timer.AutoReset = true;
+        timer.Start();
+    }
+
     private static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
@@ -145,7 +170,7 @@ internal class Program
         app.UseHttpsRedirection();
 
         app.MapControllers();
-
+        StartKeepAlivePing();
         app.Run();
     }
 }
