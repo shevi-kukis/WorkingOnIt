@@ -1,18 +1,312 @@
-.user-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  min-width: 400px;
-}
-
-.full-width {
+// עיצוב נקי ומודרני לדיאלוג המשתמש
+:host {
+  display: block;
   width: 100%;
 }
 
-mat-dialog-content {
-  padding: 20px 24px;
+// כותרת הדיאלוג
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 32px;
+  background: var(--gradient-primary);
+  color: var(--text-light);
+  margin: 0;
+  border-radius: 16px 16px 0 0;
+  
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-light);
+    
+    mat-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+    }
+  }
+  
+  .close-button {
+    color: var(--text-light);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  }
 }
 
-mat-dialog-actions {
-  padding: 16px 24px;
+// תוכן הדיאלוג
+.dialog-content {
+  padding: 32px;
+  background: var(--background-card);
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+// טופס המשתמש
+.user-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-row {
+  width: 100%;
+}
+
+// עיצוב שדות הטופס
+.full-width {
+  width: 100%;
+  
+  .mat-mdc-text-field-wrapper {
+    background-color: #fafafa;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      border-color: var(--primary-color);
+      box-shadow: 0 2px 8px rgba(0, 188, 212, 0.1);
+    }
+  }
+  
+  &.mat-focused {
+    .mat-mdc-text-field-wrapper {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.2);
+    }
+  }
+  
+  // אייקונים
+  .mat-mdc-form-field-prefix,
+  .mat-mdc-form-field-suffix {
+    color: var(--primary-color);
+  }
+  
+  // טקסט בשדות
+  .mat-mdc-input-element {
+    color: var(--text-primary);
+    font-size: 16px;
+    padding: 12px 16px;
+    
+    &::placeholder {
+      color: var(--text-secondary);
+      opacity: 0.7;
+    }
+  }
+  
+  // הודעות שגיאה
+  .mat-mdc-form-field-error {
+    background: #ffebee;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-top: 8px;
+    font-size: 14px;
+    color: var(--error-color);
+    border-left: 3px solid var(--error-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+// עיצוב אופציות התפקיד
+.role-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  
+  &.admin mat-icon {
+    color: var(--primary-color);
+  }
+  
+  &.user mat-icon {
+    color: var(--text-secondary);
+  }
+  
+  span {
+    font-weight: 500;
+  }
+}
+
+// כפתורי הפעולה
+.dialog-actions {
+  padding: 24px 32px;
+  margin: 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  background: #f8f9fa;
+  border-top: 1px solid #e0e0e0;
+  border-radius: 0 0 16px 16px;
+  
+  .cancel-button {
+    color: var(--text-secondary);
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0 24px;
+    height: 44px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background: #f5f5f5;
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+    }
+    
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+  
+  .save-button {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0 32px;
+    height: 44px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    
+    &:hover:not([disabled]) {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
+    }
+    
+    &[disabled] {
+      background: #ccc;
+      color: #666;
+      cursor: not-allowed;
+    }
+    
+    mat-icon {
+      margin-right: 8px;
+      
+      &.spinning {
+        animation: spin 1s linear infinite;
+      }
+    }
+  }
+}
+
+// אנימציה לספינר
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// רספונסיביות
+@media (max-width: 768px) {
+  .dialog-header {
+    padding: 20px 24px;
+    
+    h2 {
+      font-size: 18px;
+    }
+  }
+  
+  .dialog-content {
+    padding: 24px;
+  }
+  
+  .dialog-actions {
+    padding: 20px 24px;
+    flex-direction: column;
+    gap: 12px;
+    
+    .cancel-button,
+    .save-button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .dialog-header {
+    padding: 16px 20px;
+    
+    h2 {
+      font-size: 16px;
+      gap: 8px;
+    }
+    
+    .close-button {
+      width: 36px;
+      height: 36px;
+    }
+  }
+  
+  .dialog-content {
+    padding: 20px;
+  }
+  
+  .user-form {
+    gap: 20px;
+  }
+  
+  .full-width .mat-mdc-input-element {
+    font-size: 14px;
+    padding: 10px 14px;
+  }
+  
+  .dialog-actions {
+    padding: 16px 20px;
+    
+    .cancel-button,
+    .save-button {
+      height: 40px;
+      font-size: 14px;
+    }
+  }
+}
+
+// עיצוב נקי לסלקט
+.mat-mdc-select-panel {
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+}
+
+.mat-mdc-option {
+  padding: 12px 16px;
+  
+  &:hover {
+    background-color: rgba(0, 188, 212, 0.05);
+  }
+  
+  &.mdc-list-item--selected {
+    background-color: rgba(0, 188, 212, 0.1);
+    color: var(--primary-dark);
+  }
+}
+
+// עיצוב נקי לכותרות השדות
+.mat-mdc-form-field-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.mat-focused .mat-mdc-form-field-label {
+  color: var(--primary-color) !important;
 }

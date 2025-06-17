@@ -137,3 +137,340 @@ html, body {
 mat-card-content {
   overflow: visible !important;
 }
+// הוסף לקובץ styles.scss הגלובלי
+
+// עיצוב הודעות הצלחה
+.success-snackbar {
+  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%) !important;
+  color: white !important;
+  font-weight: 500 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3) !important;
+  
+  .mat-mdc-snack-bar-action {
+    color: white !important;
+    font-weight: 600 !important;
+  }
+}
+
+// עיצוב הודעות שגיאה
+.error-snackbar {
+  background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%) !important;
+  color: white !important;
+  font-weight: 500 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3) !important;
+  
+  .mat-mdc-snack-bar-action {
+    color: white !important;
+    font-weight: 600 !important;
+  }
+}
+
+// אנימציה לאינדיקטור טעינה
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 20px;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 12px;
+  margin-top: 16px;
+  
+  span {
+    color: #667eea;
+    font-weight: 500;
+    font-size: 16px;
+  }
+  
+  mat-spinner {
+    circle {
+      stroke: #667eea;
+    }
+  }
+}
+
+.mat-dialog-container {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+// הוסף את הסגנונות האלה לקובץ styles.scss הגלובלי או ליצור קובץ נפרד
+
+// עיצוב מותאם לדיאלוג מותאם אישית
+.custom-dialog-container {
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  box-shadow: 0 24px 38px 3px rgba(0, 0, 0, 0.14),
+              0 9px 46px 8px rgba(0, 0, 0, 0.12),
+              0 11px 15px -7px rgba(0, 0, 0, 0.2) !important;
+  
+  // וודא שהדיאלוג ממורכז
+  position: relative !important;
+  margin: auto !important;
+  
+  // אנימציה לפתיחה
+  animation: dialogSlideIn 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+// רקע מותאם לדיאלוג
+.custom-backdrop {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(4px);
+}
+
+// אנימציה לפתיחת הדיאלוג
+@keyframes dialogSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.7) translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+// עיצוב מותאם לסנאק בר
+.success-snackbar {
+  background-color: #4caf50 !important;
+  color: white !important;
+  
+  .mat-mdc-snack-bar-action {
+    color: white !important;
+  }
+}
+
+.error-snackbar {
+  background-color: #f44336 !important;
+  color: white !important;
+  
+  .mat-mdc-snack-bar-action {
+    color: white !important;
+  }
+}
+
+// תיקון למיקום הדיאלוג במרכז המסך
+.cdk-overlay-pane {
+  &:has(.custom-dialog-container) {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    max-height: 90vh !important;
+    max-width: 90vw !important;
+  }
+}
+
+// וודא שהדיאלוג לא יוצא מהמסך במכשירים קטנים
+@media (max-width: 768px) {
+  .custom-dialog-container {
+    width: 95vw !important;
+    max-width: 95vw !important;
+    margin: 16px !important;
+  }
+  
+  .cdk-overlay-pane {
+    &:has(.custom-dialog-container) {
+      position: fixed !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      width: 95vw !important;
+      max-width: 95vw !important;
+    }
+  }
+}
+// הוסף את זה לקובץ styles.scss הגלובלי
+
+// תיקון גלובלי לבעיות מיקום של mat-select
+.cdk-overlay-container {
+  z-index: 9999 !important;
+}
+
+.cdk-overlay-backdrop {
+  z-index: 9998 !important;
+}
+
+.cdk-overlay-pane {
+  z-index: 9999 !important;
+}
+
+// תיקון ספציפי לפאנלים של mat-select
+.mat-mdc-select-panel {
+  z-index: 9999 !important;
+  max-height: 300px !important;
+  overflow-y: auto !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+  
+  // וידוא שהפאנל לא יוצא מהמסך
+  &.mat-mdc-select-panel-above {
+    border-radius: 8px !important;
+  }
+}
+
+// עיצוב משופר לאופציות
+.mat-mdc-option {
+  transition: background-color 0.2s ease !important;
+  
+  &:hover {
+    background-color: #f5f5f5 !important;
+  }
+  
+  &.mdc-list-item--selected {
+    background-color: #e3f2fd !important;
+    color: #1976d2 !important;
+  }
+}
+
+// תיקון למקרים שבהם יש התנגשות עם רכיבים אחרים
+.mat-mdc-form-field {
+  position: relative;
+  z-index: 100;
+  
+  &.mat-focused {
+    z-index: 1001;
+  }
+}
+
+// וידוא שהגרפים לא מפריעים לפאנל
+canvas {
+  position: relative;
+  z-index: 1 !important;
+}
+
+.chart-container {
+  position: relative;
+  z-index: 1 !important;
+}
+// הוסף את זה לקובץ src/styles.scss הגלובלי
+
+// ערכת צבעים אחידה לכל האפליקציה
+:root {
+  // צבעים עיקריים - גווני ירוק-טורקיז
+  --primary-color: #00acc1;
+  --primary-light: #00a3c3;
+  --primary-dark:  #00acc1;
+  
+  --secondary-color: #00bcd4;
+  --secondary-light: #26c6da;
+  --secondary-dark: #00acc1;
+  
+  --accent-color: #00acc1;
+  --accent-light: #00acc1;
+  --accent-dark:  #00acc1;
+  
+  // צבעי רקע
+  --background-primary: #f5f5f5;
+  --background-secondary: #ffffff;
+  --background-card: #ffffff;
+  
+  // צבעי טקסט
+  --text-primary: #212121;
+  --text-secondary: #757575;
+  --text-light: #ffffff;
+  
+  // צבעי מצב
+  --success-color: #4caf50;
+  --warning-color: #ff9800;
+  --error-color: #f44336;
+  --info-color: #2196f3;
+  
+  // גרדיאנטים
+  --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+  --gradient-secondary: linear-gradient(135deg, var(--secondary-color) 0%, var(--secondary-dark) 100%);
+  --gradient-accent: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-light) 100%);
+}
+
+// תיקון גלובלי לדיאלוגים
+.cdk-overlay-container {
+  z-index: 10000 !important;
+}
+
+.cdk-overlay-backdrop {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(4px);
+  z-index: 9999 !important;
+}
+
+.cdk-overlay-pane {
+  z-index: 10000 !important;
+  position: fixed !important;
+}
+
+// תיקון ספציפי לדיאלוג המשתמש
+.custom-dialog-container {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  max-height: 90vh !important;
+  max-width: 90vw !important;
+  width: 600px !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  box-shadow: 0 24px 38px 3px rgba(0, 0, 0, 0.14),
+              0 9px 46px 8px rgba(0, 0, 0, 0.12),
+              0 11px 15px -7px rgba(0, 0, 0, 0.2) !important;
+  animation: dialogSlideIn 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+@keyframes dialogSlideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.7) translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1) translateY(0);
+  }
+}
+
+// עיצוב אחיד לכל הכרטיסים
+.mat-mdc-card {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+  border: none !important;
+}
+
+// עיצוב אחיד לכפתורים
+.mat-mdc-raised-button.mat-primary {
+  background: var(--gradient-primary) !important;
+  color: var(--text-light) !important;
+}
+
+.mat-mdc-raised-button.mat-accent {
+  background: var(--gradient-secondary) !important;
+  color: var(--text-light) !important;
+}
+
+// עיצוב אחיד לטבלאות
+.mat-mdc-table {
+  background: var(--background-card) !important;
+}
+
+.mat-mdc-header-cell {
+  background: linear-gradient(135deg, #e8f5e8 0%, #e0f2f1 100%) !important;
+  color: var(--primary-color) !important;
+  font-weight: 600 !important;
+}
+
+.mat-mdc-row:hover {
+  background-color: rgba(0, 188, 212, 0.05) !important;
+}
+
+// עיצוב אחיד לסנאק בר
+.success-snackbar {
+  background: var(--success-color) !important;
+  color: white !important;
+}
+
+.error-snackbar {
+  background: var(--error-color) !important;
+  color: white !important;
+}

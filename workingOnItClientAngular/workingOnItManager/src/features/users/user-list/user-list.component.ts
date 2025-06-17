@@ -22,7 +22,6 @@ import { UserDialogComponent } from "../user-dialog/user-dialog.component"
     MatCardModule,
     MatDialogModule,
     MatTooltipModule,
-     
   ],
   templateUrl: "./user-list.component.html",
   styleUrls: ["./user-list.component.scss"],
@@ -52,15 +51,24 @@ export class UserListComponent implements OnInit {
 
   openUserDialog(user?: User) {
     const dialogRef = this.dialog.open(UserDialogComponent, {
-      width: "500px",
+      width: '600px',
+      maxWidth: '90vw',
+      height: 'auto',
+      maxHeight: '90vh',
       data: user || null,
-    })
+      disableClose: false,
+      autoFocus: true,
+      restoreFocus: true,
+      panelClass: 'custom-dialog-container',
+      hasBackdrop: true,
+      backdropClass: 'custom-backdrop'
+    });
 
     dialogRef.afterClosed().subscribe((result: any) => {
       if (result) {
-        this.loadUsers()
+        this.loadUsers();
       }
-    })
+    });
   }
 
   downloadResume(userId: number) {
@@ -68,7 +76,6 @@ export class UserListComponent implements OnInit {
       if (url) {
         window.open(url, "_blank");
       } else {
-        // טיפול במקרה שאין קישור
         console.error("No URL received");
       }
     });

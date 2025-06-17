@@ -89,7 +89,12 @@ const theme = createTheme({
 function App() {
 
   const [isLoading, setIsLoading] = useState(true)
-
+  useEffect(() => {
+    fetch("https://workingonitaiserver.onrender.com/ping")
+      .then(() => console.log("Ping sent to Python server"))
+      .catch(err => console.error("Ping failed:", err));
+  }, []);
+  
 
   useEffect(() => {
     // Simulate loading

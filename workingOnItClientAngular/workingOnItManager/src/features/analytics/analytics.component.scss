@@ -2,13 +2,54 @@
   padding: 20px;
   max-width: 1400px;
   margin: 0 auto;
+  position: relative;
 }
 
 h1 {
-  color: #00695c;
+  color: #00acc1;
   margin-bottom: 30px;
   font-size: 32px;
   font-weight: 300;
+}
+
+// קונטיינר לשדה בחירת המשתמש
+.user-select-container {
+  position: relative;
+  z-index: 1000;
+  margin-bottom: 30px;
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-select {
+  width: 100%;
+  max-width: 400px;
+  
+  .mat-mdc-form-field-wrapper {
+    background: white;
+  }
+}
+
+// עיצוב מותאם לאופציות הבחירה
+.option-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 0;
+  
+  strong {
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+  }
+  
+  small {
+    color: #666;
+    font-size: 12px;
+    opacity: 0.8;
+  }
 }
 
 .charts-grid {
@@ -16,25 +57,34 @@ h1 {
   grid-template-columns: 1fr 1fr;
   grid-template-rows: auto auto;
   gap: 20px;
+  position: relative;
+  z-index: 1;
 }
 
 .chart-card {
   min-height: 400px;
+  position: relative;
+  z-index: 1;
+}
+
+.chart-container {
+  position: relative;
+  height: 350px;
+  width: 100%;
 }
 
 .stats-card {
   grid-column: 1 / -1;
 }
 
-.user-select {
-  width: 100%;
-  margin-bottom: 20px;
-}
-
 .no-data {
   text-align: center;
   padding: 40px;
   color: #666;
+  font-style: italic;
+  background: #f5f5f5;
+  border-radius: 8px;
+  margin: 20px 0;
 }
 
 .stats-grid {
@@ -49,6 +99,12 @@ h1 {
   background: linear-gradient(135deg, #00bcd4 0%, #00acc1 100%);
   color: white;
   border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
+  transition: transform 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+  }
 }
 
 .stat-item h3 {
@@ -67,33 +123,63 @@ h1 {
   .charts-grid {
     grid-template-columns: 1fr;
   }
-}
-/* styles.scss או global styles */
-html, body {
-  height: 100%;
- 
+  
+  .user-select-container {
+    padding: 12px;
+  }
+  
+  .user-select {
+    max-width: 100%;
+  }
 }
 
-.mat-select-panel {
-  z-index: 1000 !important;
-}
-
-.user-select {
-  width: 100%;
-  margin-bottom: 20px;
-  position: relative; /* הוסף את זה */
-  z-index: 1000;       /* חיזוק נוסף */
-}
-::ng-deep .custom-panel {
-  z-index: 2000 !important;
-}
-::ng-deep .mat-select-panel {
-  max-height: 300px !important;
-  overflow: auto !important;
-  z-index: 2000 !important;
-}
-::ng-deep .cdk-overlay-pane {
-  z-index: 2000 !important;
+// תיקון ספציפי לפאנל הבחירה
+::ng-deep .user-select-panel {
+  z-index: 9999 !important;
   max-height: 300px !important;
   overflow-y: auto !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+  
+  .mat-mdc-option {
+    min-height: 60px !important;
+    padding: 12px 16px !important;
+    border-bottom: 1px solid #f0f0f0;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    &:hover {
+      background-color: #f5f5f5 !important;
+    }
+    
+    &.mdc-list-item--selected {
+      background-color: #e3f2fd !important;
+      color: #1976d2 !important;
+      
+      strong {
+        color: #1976d2 !important;
+      }
+    }
+  }
+}
+
+// וידוא שה-overlay ממוקם נכון
+::ng-deep .cdk-overlay-pane {
+  &:has(.user-select-panel) {
+    z-index: 9999 !important;
+    position: fixed !important;
+  }
+}
+
+// תיקון למיקום הפאנל יחסית לשדה הבחירה
+::ng-deep .mat-mdc-select-panel {
+  z-index: 9999 !important;
+  transform-origin: center top !important;
+  
+  &.user-select-panel {
+    margin-top: 8px !important;
+    border-radius: 8px !important;
+  }
 }

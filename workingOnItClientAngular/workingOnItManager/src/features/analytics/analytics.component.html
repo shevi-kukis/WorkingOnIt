@@ -1,18 +1,32 @@
 <div class="analytics-container">
   <h1>Analytics Dashboard</h1>
 
-  <!-- השדה לבחירת משתמש ממוקם מעל הקומפוננטות -->
-  <mat-form-field appearance="outline" class="user-select">
-    <mat-label>Select User</mat-label>
-    <mat-select panelClass="custom-panel" [(value)]="selectedUserId" (selectionChange)="onUserSelect()">
-      <mat-option [value]="0">All Users</mat-option>
-      @for (user of users; track user.id) {
-        <mat-option [value]="user.id">
-          {{ user.fullName }} ({{ user.email }})
+  <!-- שדה בחירת המשתמש עם מיקום מתוקן -->
+  <div class="user-select-container">
+    <mat-form-field appearance="outline" class="user-select">
+      <mat-label>Select User</mat-label>
+      <mat-select 
+        [(value)]="selectedUserId" 
+        (selectionChange)="onUserSelect()"
+        panelClass="user-select-panel"
+        [disableOptionCentering]="true">
+        <mat-option [value]="0">
+          <span class="option-content">
+            <strong>All Users</strong>
+            <small>  View global statistics</small>
+          </span>
         </mat-option>
-      }
-    </mat-select>
-  </mat-form-field>
+        @for (user of users; track user.id) {
+          <mat-option [value]="user.id">
+            <span class="option-content">
+              <strong>{{ user.fullName }}</strong>
+              <small>  {{ user.email }}</small>
+            </span>
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
 
   <div class="charts-grid">
     <mat-card class="chart-card">
@@ -22,11 +36,17 @@
       </mat-card-header>
       <mat-card-content>
         @if (!selectedUserId || selectedUserId === 0) {
-          <canvas baseChart
-            [data]="globalChartData"
-            [type]="globalChartType"
-            [options]="globalChartOptions">
-          </canvas>
+          <div class="chart-container">
+            <canvas baseChart
+              [data]="globalChartData"
+              [type]="globalChartType"
+              [options]="globalChartOptions">
+            </canvas>
+          </div>
+        } @else {
+          <div class="no-data">
+            <p>Select "All Users" to view global statistics</p>
+          </div>
         }
       </mat-card-content>
     </mat-card>
@@ -38,16 +58,16 @@
       </mat-card-header>
       <mat-card-content>
         @if (selectedUserId && selectedUserId !== 0) {
-          <canvas baseChart
-            [data]="userChartData"
-            [type]="userChartType"
-            [options]="userChartOptions">
-          </canvas>
-        }
-
-        @if (!selectedUserId) {
+          <div class="chart-container">
+            <canvas baseChart
+              [data]="userChartData"
+              [type]="userChartType"
+              [options]="userChartOptions">
+            </canvas>
+          </div>
+        } @else {
           <div class="no-data">
-            <p>Please select a user to view their performance chart</p>
+            <p>Please select a specific user to view their performance chart</p>
           </div>
         }
       </mat-card-content>

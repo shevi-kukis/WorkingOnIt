@@ -1,16 +1,15 @@
-
 import { Component, inject, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { MatCardModule } from "@angular/material/card";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatSelectModule } from "@angular/material/select";
-// Removed incorrect import of NgChartsModule
 import { Chart, ChartConfiguration, ChartType, registerables } from "chart.js";
 import { AnalyticsService } from "../../core/services/analytics.service";
 import { UserService } from "../../core/services/user.service";
-import  { User } from "../../core/models/user.model";
-import  { AllUserScores } from "../../core/models/interview.model";
+import { User } from "../../core/models/user.model";
+import { AllUserScores } from "../../core/models/interview.model";
 import { NgChartsModule } from 'ng2-charts';
+
 Chart.register(...registerables);
 
 @Component({
@@ -22,7 +21,6 @@ Chart.register(...registerables);
     MatFormFieldModule,
     MatSelectModule,
     NgChartsModule
-    // Removed incorrect usage of NgChartsModule
   ],
   templateUrl: "./analytics.component.html",
   styleUrls: ["./analytics.component.scss"],

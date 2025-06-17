@@ -6,6 +6,8 @@ import { MatFormFieldModule } from "@angular/material/form-field"
 import { MatInputModule } from "@angular/material/input"
 import { MatSelectModule } from "@angular/material/select"
 import { MatButtonModule } from "@angular/material/button"
+import { MatIconModule } from "@angular/material/icon"
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner"
 import { MatSnackBar } from "@angular/material/snack-bar"
 import { UserService } from "../../../core/services/user.service"
 import { User } from "../../../core/models/user.model"
@@ -21,6 +23,8 @@ import { User } from "../../../core/models/user.model"
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: "./user-dialog.component.html",
   styleUrls: ["./user-dialog.component.scss"],
@@ -34,12 +38,25 @@ export class UserDialogComponent {
 
   isEdit = !!this.data
   isLoading = false
+  hidePassword = true
 
   userForm: FormGroup = this.fb.group({
-    fullName: [this.data?.fullName || "", Validators.required],
-    email: [this.data?.email || "", [Validators.required, Validators.email]],
-    password: ["", this.isEdit ? [] : [Validators.required, Validators.minLength(6)]],
-    roleId: [this.data?.roleId || 2, Validators.required],
+    fullName: [
+      this.data?.fullName || "", 
+      [Validators.required, Validators.minLength(2)]
+    ],
+    email: [
+      this.data?.email || "", 
+      [Validators.required, Validators.email]
+    ],
+    password: [
+      "", 
+      this.isEdit ? [] : [Validators.required, Validators.minLength(6)]
+    ],
+    roleId: [
+      this.data?.roleId || 2, 
+      Validators.required
+    ],
   })
 
   onSave() {
@@ -49,37 +66,82 @@ export class UserDialogComponent {
       if (this.isEdit && this.data) {
         const updateData = {
           id: this.data.id,
-          fullName: this.userForm.value.fullName,
-          email: this.userForm.value.email,
+          fullName: this.userForm.value.fullName.trim(),
+          email: this.userForm.value.email.trim().toLowerCase(),
           roleId: this.userForm.value.roleId,
         }
 
         this.userService.updateUser(updateData).subscribe({
           next: () => {
-            this.snackBar.open("User updated successfully", "Close", { duration: 3000 })
+            this.showSuccessMessage("המשתמש עודכן בהצלחה! ✅")
             this.dialogRef.close(true)
           },
-          error: () => {
-            this.snackBar.open("Error updating user", "Close", { duration: 3000 })
+          error: (error) => {
+            this.showErrorMessage("שגיאה בעדכון המשתמש ❌")
             this.isLoading = false
+            console.error('Update error:', error)
           },
         })
       } else {
-        this.userService.createUser(this.userForm.value).subscribe({
+        const createData = {
+          ...this.userForm.value,
+          fullName: this.userForm.value.fullName.trim(),
+          email: this.userForm.value.email.trim().toLowerCase(),
+        }
+
+        this.userService.createUser(createData).subscribe({
           next: () => {
-            this.snackBar.open("User created successfully", "Close", { duration: 3000 })
+            this.showSuccessMessage("המשתמש נוצר בהצלחה! ✅")
             this.dialogRef.close(true)
           },
-          error: () => {
-            this.snackBar.open("Error creating user", "Close", { duration: 3000 })
+          error: (error) => {
+            this.showErrorMessage("שגיאה ביצירת המשתמש ❌")
             this.isLoading = false
+            console.error('Create error:', error)
           },
         })
       }
+    } else {
+      this.markFormGroupTouched()
+      this.showErrorMessage("אנא מלא את כל השדות הנדרשים")
     }
   }
 
   onCancel() {
-    this.dialogRef.close(false)
+    if (this.userForm.dirty && !this.isLoading) {
+      const confirmClose = confirm("יש לך שינויים שלא נשמרו. האם אתה בטוח שברצונך לסגור?")
+      if (confirmClose) {
+        this.dialogRef.close(false)
+      }
+    } else {
+      this.dialogRef.close(false)
+    }
+  }
+
+  private markFormGroupTouched() {
+    Object.keys(this.userForm.controls).forEach(key => {
+      const control = this.userForm.get(key)
+      if (control) {
+        control.markAsTouched()
+      }
+    })
+  }
+
+  private showSuccessMessage(message: string) {
+    this.snackBar.open(message, "סגור", { 
+      duration: 4000,
+      panelClass: ['success-snackbar'],
+      horizontalPosition: 'center',
+      verticalPosition: 'top'
+    })
+  }
+
+  private showErrorMessage(message: string) {
+    this.snackBar.open(message, "סגור", { 
+      duration: 5000,
+      panelClass: ['error-snackbar'],
+      horizontalPosition: 'center',
+      verticalPosition: 'top'
+    })
   }
 }
