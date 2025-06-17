@@ -12,6 +12,11 @@ export const routes: Routes = [
     loadComponent: () => import("../features/dashboard/dashboard.component").then((m) => m.DashboardComponent),
      canActivate: [AuthGuard], 
   },
+  {
+    path: "user-dialog",
+    loadComponent: () => import("../features/users/user-dialog/user-dialog.component").then((m) => m.UserDialogComponent),
+     canActivate: [AuthGuard], 
+  },
   
   {
     path: "users",
@@ -32,4 +37,5 @@ export const routes: Routes = [
     path: "**",
     redirectTo: "/dashboard",
   },
+  
 ]
