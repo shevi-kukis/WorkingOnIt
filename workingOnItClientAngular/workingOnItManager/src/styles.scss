@@ -474,3 +474,14 @@ canvas {
   background: var(--error-color) !important;
   color: white !important;
 }
+::ng-deep .error-snackbar {
+  background-color: #f44336 !important;
+  color: white !important;
+  font-weight: bold;
+}
+
+::ng-deep .success-snackbar {
+  background-color: #4caf50 !important;
+  color: white !important;
+  font-weight: bold;
+}

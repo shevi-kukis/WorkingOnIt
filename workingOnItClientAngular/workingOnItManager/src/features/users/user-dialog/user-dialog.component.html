@@ -20,8 +20,14 @@
           שם מלא הוא שדה חובה
         </mat-error>
       }
+      @if (userForm.get('fullName')?.hasError('minlength')) {
+        <mat-error>
+          <mat-icon>error</mat-icon>
+          שם מלא חייב להכיל לפחות 2 תווים
+        </mat-error>
+      }
     </mat-form-field>
-
+    @if (!isEdit) {
     <!-- שדה אימייל -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>כתובת אימייל</mat-label>
@@ -33,6 +39,7 @@
         required 
         placeholder="example@email.com"
         autocomplete="email" />
+
       @if (userForm.get('email')?.hasError('required')) {
         <mat-error>
           <mat-icon>error</mat-icon>
@@ -48,7 +55,7 @@
     </mat-form-field>
 
     <!-- שדה סיסמה (רק בהוספה) -->
-    @if (!isEdit) {
+    
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>סיסמה</mat-label>
         <mat-icon matPrefix>lock</mat-icon>

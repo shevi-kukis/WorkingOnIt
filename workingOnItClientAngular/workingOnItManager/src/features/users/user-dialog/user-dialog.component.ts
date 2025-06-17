@@ -8,7 +8,7 @@ import { MatSelectModule } from "@angular/material/select"
 import { MatButtonModule } from "@angular/material/button"
 import { MatIconModule } from "@angular/material/icon"
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner"
-import { MatSnackBar } from "@angular/material/snack-bar"
+import { MatSnackBar, MatSnackBarModule } from "@angular/material/snack-bar"
 import { UserService } from "../../../core/services/user.service"
 import { User } from "../../../core/models/user.model"
 
@@ -25,6 +25,7 @@ import { User } from "../../../core/models/user.model"
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    MatSnackBarModule,
   ],
   templateUrl: "./user-dialog.component.html",
   styleUrls: ["./user-dialog.component.scss"],
@@ -77,9 +78,8 @@ export class UserDialogComponent {
             this.dialogRef.close(true)
           },
           error: (error) => {
-            this.showErrorMessage("שגיאה בעדכון המשתמש ❌")
+            this.handleError(error, 'update')
             this.isLoading = false
-            console.error('Update error:', error)
           },
         })
       } else {
@@ -95,9 +95,8 @@ export class UserDialogComponent {
             this.dialogRef.close(true)
           },
           error: (error) => {
-            this.showErrorMessage("שגיאה ביצירת המשתמש ❌")
+            this.handleError(error, 'create')
             this.isLoading = false
-            console.error('Create error:', error)
           },
         })
       }
@@ -116,6 +115,60 @@ export class UserDialogComponent {
     } else {
       this.dialogRef.close(false)
     }
+  }
+
+  private handleError(error: any, action: 'create' | 'update') {
+    console.error(`${action} error:`, error)
+    
+    // בדיקה אם יש הודעת שגיאה מהשרת
+    let errorMessage = ''
+    
+    // נסה מספר אפשרויות לגישה להודעת השגיאה
+    const serverMessage = error?.error?.message || error?.message || ''
+    
+    console.log('Server message:', serverMessage) // לבדיקה
+    
+    if (serverMessage) {
+      // טיפול בשגיאה של משתמש קיים
+      if (serverMessage === 'User already exist' || serverMessage.includes('already exist')) {
+        if (action === 'create') {
+          errorMessage = "❌ משתמש עם כתובת אימייל זו כבר קיים במערכת"
+          alert('User already exist')
+        } else {
+          errorMessage = "❌ כתובת האימייל החדשה כבר בשימוש על ידי משתמש אחר"
+        }
+      }
+      // טיפול בשגיאות נוספות שיכולות להגיע מהשרת
+      else if (serverMessage.includes('email') && serverMessage.includes('duplicate')) {
+        errorMessage = action === 'create' 
+          ? "❌ כתובת האימייל כבר קיימת במערכת" 
+          : "❌ כתובת האימייל החדשה כבר בשימוש"
+      }
+      else if (serverMessage.includes('validation')) {
+        errorMessage = "❌ נתונים לא תקינים, אנא בדוק את הפרטים"
+      }
+      else {
+        // הודעת שגיאה כללית עם ההודעה מהשרת
+        errorMessage = action === 'create' 
+          ? `❌ שגיאה ביצירת המשתמש: ${serverMessage}` 
+          : `❌ שגיאה בעדכון המשתמש: ${serverMessage}`
+      }
+    } 
+    // שגיאת רשת או שגיאה לא צפויה
+    else if (error?.status === 0) {
+      errorMessage = "❌ שגיאת תקשורת - אנא בדוק את החיבור לאינטרנט"
+    }
+    else if (error?.status === 500) {
+      errorMessage = "❌ שגיאה בשרת - אנא נסה שוב מאוחר יותר"
+    }
+    else {
+      // הודעת שגיאה כללית
+      errorMessage = action === 'create' 
+        ? "❌ שגיאה ביצירת המשתמש - אנא נסה שוב" 
+        : "❌ שגיאה בעדכון המשתמש - אנא נסה שוב"
+    }
+    
+    this.showErrorMessage(errorMessage)
   }
 
   private markFormGroupTouched() {
@@ -137,9 +190,10 @@ export class UserDialogComponent {
   }
 
   private showErrorMessage(message: string) {
+    console.log('Showing error message:', message) // לבדוק שהפונקציה נקראת
+  
     this.snackBar.open(message, "סגור", { 
-      duration: 5000,
-      panelClass: ['error-snackbar'],
+      duration: 6000,
       horizontalPosition: 'center',
       verticalPosition: 'top'
     })
